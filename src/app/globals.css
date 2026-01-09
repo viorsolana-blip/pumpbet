@@ -1,0 +1,436 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Satoshi Font */
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700&display=swap');
+
+/* ============================================
+   DESIGN SYSTEM - APELLA.FUN
+   Clean dark mode with minimal accents
+   ============================================ */
+
+:root {
+  /* Colors - Dark mode focused */
+  --background: #000000;
+  --surface: #0a0a0a;
+  --surface-light: #111111;
+  --surface-hover: #161616;
+  --border: #1a1a1a;
+  --border-light: #222222;
+
+  /* Primary is used sparingly */
+  --primary: #ff0000;
+  --primary-dark: #cc0000;
+
+  /* Text colors */
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --text-muted: #666666;
+  --text-dim: #444444;
+
+  /* Accent colors for data */
+  --accent-green: #22c55e;
+  --accent-red: #ef4444;
+  --accent-blue: #3b82f6;
+
+  /* Consistent border radius */
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-lg: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: 'Satoshi', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   SCROLLBAR - Subtle
+   ============================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a3a;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--radius);
+  transition: all 150ms ease;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: white;
+  color: black;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #e0e0e0;
+}
+
+.btn-secondary {
+  background: var(--surface-light);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--surface-hover);
+  color: white;
+  border-color: var(--border-light);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--surface-light);
+  color: white;
+}
+
+/* ============================================
+   INPUTS
+   ============================================ */
+.input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 14px;
+  color: white;
+  transition: all 150ms ease;
+}
+
+.input::placeholder {
+  color: var(--text-dim);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--border-light);
+  background: var(--surface-light);
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.card:hover {
+  border-color: var(--border-light);
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+}
+
+.badge-default {
+  background: var(--surface-light);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.badge-green {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--accent-green);
+}
+
+.badge-red {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--accent-red);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 0, 0, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); }
+}
+
+@keyframes texture-scroll {
+  0% { background-position: 0% center; }
+  100% { background-position: 100% center; }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.animate-fade-in {
+  animation: fade-in 300ms ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 400ms ease-out forwards;
+}
+
+.animate-fade-in-down {
+  animation: fade-in-down 400ms ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 300ms ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 400ms ease-out forwards;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 400ms ease-out forwards;
+}
+
+@keyframes slide-in-down {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.animate-slide-in-down {
+  animation: slide-in-down 300ms ease-out forwards;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+.animate-texture-scroll {
+  animation: texture-scroll 20s linear infinite;
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+/* Staggered animation delays */
+.animate-delay-100 { animation-delay: 100ms; }
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-300 { animation-delay: 300ms; }
+.animate-delay-400 { animation-delay: 400ms; }
+.animate-delay-500 { animation-delay: 500ms; }
+
+/* Smooth hover transitions for interactive elements */
+.hover-lift {
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.hover-glow {
+  transition: box-shadow 200ms ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+}
+
+/* Mascot bounce animation */
+.mascot-bounce {
+  animation: bounce-subtle 3s ease-in-out infinite;
+}
+
+/* ============================================
+   PRICE COLORS
+   ============================================ */
+.text-green { color: var(--accent-green); }
+.text-red { color: var(--accent-red); }
+.bg-green { background: var(--accent-green); }
+.bg-red { background: var(--accent-red); }
+
+/* ============================================
+   LAYOUT HELPERS
+   ============================================ */
+.panel {
+  background: var(--background);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ============================================
+   SHIMMER LOADING
+   ============================================ */
+@keyframes shimmer {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
+.shimmer {
+  background: var(--surface-light);
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* ============================================
+   FOCUS STATES - Subtle
+   ============================================ */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--border-light);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   SELECTION
+   ============================================ */
+::selection {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
