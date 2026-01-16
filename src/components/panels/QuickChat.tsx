@@ -101,50 +101,46 @@ export function QuickChat() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-black">
-      {/* Animated texture accent bar */}
-      <div
-        className="w-full h-3 flex-shrink-0 animate-texture-scroll"
-        style={{
-          backgroundImage: 'url(/brand/pixel-texture.jpeg)',
-          backgroundSize: '200% 100%',
-          backgroundRepeat: 'repeat-x',
-        }}
-      />
+    <div className="flex flex-col h-full bg-[#F5F0E1]">
+      {/* Decorative top stripe */}
+      <div className="w-full h-2 flex-shrink-0 bg-gradient-to-r from-[#6B7B5E] via-[#8B7355] to-[#6B7B5E]" />
 
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-[#1a1a1a]">
+      <div className="flex items-center justify-between p-3 border-b-2 border-[#E8E2D0]">
         <div className="flex items-center gap-2">
-          <MessageSquare className="w-4 h-4 text-white" />
-          <span className="text-sm font-medium text-white">Quick Chat</span>
-          <span className="text-[9px] text-[#888] bg-[#1a1a1a] px-1.5 py-0.5 rounded">AI</span>
-          <button className="text-xs text-[#555] hover:text-white transition-colors">+ new</button>
+          <MessageSquare className="w-4 h-4 text-[#5A6A4D]" />
+          <span className="text-sm font-bambino font-bold text-[#3A4A2D]">Quick Chat</span>
+          <span className="text-[9px] text-[#6B7B5E] bg-[#EFEAD9] px-1.5 py-0.5 rounded-lg font-bambino font-bold border border-[#D4CDB8]">AI</span>
+          <button className="text-xs text-[#8B9B7E] hover:text-[#5A6A4D] transition-colors font-bambino font-bold">+ new</button>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-[#555]">{messages.length} messages</span>
+          <span className="text-xs text-[#8B9B7E] font-bambino">{messages.length} messages</span>
           <Image
-            src="/brand/icon.png"
+            src="/brand/helmet-logo.png"
             alt=""
-            width={14}
-            height={14}
-            className="opacity-30"
+            width={16}
+            height={16}
+            className="opacity-40"
           />
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#EFEAD9]">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center animate-fade-in">
-            <Image
-              src="/brand/mascot.png"
-              alt=""
-              width={100}
-              height={140}
-              className="opacity-20 mb-4 animate-float"
-            />
-            <p className="text-[#666] text-sm">Ask me anything about markets</p>
-            <p className="text-[#444] text-xs mt-1 mb-4">I can search, analyze, and compare</p>
+            <div className="relative">
+              <div className="absolute -inset-4 bg-[#6B7B5E]/10 rounded-full blur-xl" />
+              <Image
+                src="/brand/mascot.png"
+                alt=""
+                width={80}
+                height={80}
+                className="relative opacity-30 mb-4"
+              />
+            </div>
+            <p className="text-[#6B7B5E] text-sm font-bambino font-bold">Ask me anything about markets</p>
+            <p className="text-[#8B9B7E] text-xs mt-1 mb-4 font-bambino">I can search, analyze, and compare</p>
 
             {/* Suggested Questions */}
             <div className="space-y-2 w-full max-w-sm">
@@ -157,11 +153,11 @@ export function QuickChat() {
                 <button
                   key={idx}
                   onClick={() => setInput(suggestion)}
-                  className="w-full p-2.5 bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg text-xs text-[#666] hover:text-white hover:border-[#333] transition-all duration-200 text-left animate-fade-in-up"
+                  className="w-full p-2.5 bg-[#F5F0E1] border-2 border-[#D4CDB8] rounded-xl text-xs text-[#6B7B5E] hover:text-[#3A4A2D] hover:border-[#6B7B5E] transition-all duration-200 text-left animate-fade-in-up font-bambino"
                   style={{ animationDelay: `${idx * 100}ms` }}
                 >
                   <span className="flex items-center gap-2">
-                    <Sparkles className="w-3 h-3 text-[#444]" />
+                    <Sparkles className="w-3 h-3 text-[#8B9B7E]" />
                     {suggestion}
                   </span>
                 </button>
@@ -173,8 +169,8 @@ export function QuickChat() {
           <div key={message.id} className="animate-fade-in-up">
             {message.role === 'user' ? (
               <div className="flex justify-end">
-                <div className="max-w-[80%] bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg p-3">
-                  <p className="text-sm text-white">{message.content}</p>
+                <div className="max-w-[80%] bg-[#6B7B5E] border-2 border-[#5A6A4D] rounded-2xl p-3 shadow-lg">
+                  <p className="text-sm text-[#F5F0E1] font-bambino">{message.content}</p>
                 </div>
               </div>
             ) : (
@@ -185,7 +181,7 @@ export function QuickChat() {
                     {message.reasoning.map((reason, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center gap-1 text-xs text-[#555]"
+                        className="flex items-center gap-1 text-xs text-[#8B9B7E] font-bambino"
                       >
                         {message.isLoading ? (
                           <Loader2 className="w-3 h-3 animate-spin" />
@@ -200,20 +196,20 @@ export function QuickChat() {
 
                 {/* Loading indicator */}
                 {message.isLoading && (
-                  <div className="flex items-center gap-2 text-[#555]">
+                  <div className="flex items-center gap-2 text-[#8B9B7E]">
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span className="text-sm">Thinking...</span>
+                    <span className="text-sm font-bambino">Thinking...</span>
                   </div>
                 )}
 
                 {/* Content with markdown-like formatting */}
                 {!message.isLoading && message.content && (
-                  <div className="text-sm text-white prose prose-invert prose-sm max-w-none">
+                  <div className="text-sm text-[#3A4A2D] max-w-none bg-[#F5F0E1] border-2 border-[#D4CDB8] rounded-2xl p-4">
                     {message.content.split('\n').map((line, i) => {
                       // Handle markdown tables
                       if (line.startsWith('|') && line.endsWith('|')) {
                         return (
-                          <pre key={i} className="text-xs text-[#888] bg-[#0a0a0a] p-2 rounded overflow-x-auto">
+                          <pre key={i} className="text-xs text-[#6B7B5E] bg-[#EFEAD9] p-2 rounded-lg overflow-x-auto font-mono">
                             {line}
                           </pre>
                         );
@@ -221,7 +217,7 @@ export function QuickChat() {
                       // Handle headers
                       if (line.startsWith('**') && line.endsWith('**')) {
                         return (
-                          <p key={i} className="font-semibold text-white mt-3 mb-1">
+                          <p key={i} className="font-bambino font-bold text-[#3A4A2D] mt-3 mb-1">
                             {line.replace(/\*\*/g, '')}
                           </p>
                         );
@@ -229,13 +225,13 @@ export function QuickChat() {
                       // Handle bullet points
                       if (line.startsWith('- ')) {
                         return (
-                          <p key={i} className="text-[#888] pl-3 before:content-['•'] before:mr-2 before:text-[#555]">
+                          <p key={i} className="text-[#5A6A4D] pl-3 before:content-['•'] before:mr-2 before:text-[#8B9B7E] font-bambino">
                             {line.slice(2)}
                           </p>
                         );
                       }
                       // Regular text
-                      return line ? <p key={i} className="text-[#888]">{line}</p> : <br key={i} />;
+                      return line ? <p key={i} className="text-[#5A6A4D] font-bambino">{line}</p> : <br key={i} />;
                     })}
                   </div>
                 )}
@@ -247,12 +243,12 @@ export function QuickChat() {
       </div>
 
       {/* Input */}
-      <div className="p-3 border-t border-[#1a1a1a]">
+      <div className="p-3 border-t-2 border-[#E8E2D0] bg-[#F5F0E1]">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setMessages([])}
             disabled={messages.length === 0}
-            className="p-2 text-[#555] hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            className="p-2 text-[#8B9B7E] hover:text-[#C45A4A] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             title="Clear chat"
           >
             <Trash2 className="w-4 h-4" />
@@ -265,12 +261,12 @@ export function QuickChat() {
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
               placeholder={isLoading ? 'Waiting for response...' : 'Ask about markets, crypto, sports, politics...'}
               disabled={isLoading}
-              className="w-full bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg px-4 py-2.5 pr-10 text-sm text-white placeholder:text-[#444] focus:outline-none focus:border-[#333] transition-colors disabled:opacity-50"
+              className="w-full bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-xl px-4 py-2.5 pr-10 text-sm text-[#3A4A2D] placeholder:text-[#8B9B7E] focus:outline-none focus:border-[#6B7B5E] transition-colors disabled:opacity-50 font-bambino"
             />
             <button
               onClick={handleSend}
               disabled={isLoading || !input.trim()}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-[#555] hover:text-white hover:bg-[#1a1a1a] rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-[#8B9B7E] hover:text-[#5A6A4D] hover:bg-[#E8E2D0] rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { Bell, ChevronDown, Wallet, LogOut, Zap, Settings } from 'lucide-react';
+import Link from 'next/link';
+import { Bell, ChevronDown, Wallet, LogOut, Zap, Settings, Trophy, Coins, Loader2 } from 'lucide-react';
 import { useStore } from '@/store';
 
 export function Header() {
@@ -20,7 +21,8 @@ export function Header() {
     splitView,
     setSplitView,
     setSplitPanels,
-    tabs
+    tabs,
+    pendingTransactions,
   } = useStore();
 
   const [showNotifications, setShowNotifications] = useState(false);
@@ -29,13 +31,12 @@ export function Header() {
   const walletRef = useRef<HTMLDivElement>(null);
 
   const [notifications, setNotifications] = useState([
-    { id: 1, text: 'Bitcoin above $100K market is trending', time: '2m ago', unread: true },
-    { id: 2, text: 'Large whale trade detected: $50K on Chiefs', time: '15m ago', unread: true },
-    { id: 3, text: 'New market: GPT-5 release date', time: '1h ago', unread: false },
-    { id: 4, text: 'Your position in Super Bowl market is up 12%', time: '2h ago', unread: false },
+    { id: 1, text: 'Ansem just hit a new milestone!', time: '2m ago', unread: true },
+    { id: 2, text: 'Whale alert: 500 SOL bet on YES', time: '15m ago', unread: true },
+    { id: 3, text: 'New KOL bet: Will Cented reach 100K?', time: '1h ago', unread: false },
+    { id: 4, text: 'Your position is up 23%!', time: '2h ago', unread: false },
   ]);
 
-  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
@@ -50,25 +51,17 @@ export function Header() {
   }, []);
 
   const handleConnect = async () => {
-    // Security: We only request read-only access to public address
-    // We NEVER request or store private keys
-    // We NEVER request transaction signing without user action
-
-    // Check for Phantom wallet (Solana)
     const phantom = (window as any).phantom?.solana;
-    // Check for MetaMask (Ethereum)
     const ethereum = (window as any).ethereum;
 
     if (phantom?.isPhantom) {
       try {
-        // Only requests public key - no private key access
         const response = await phantom.connect();
         const address = response.publicKey.toString();
         setIsConnected(true);
-        setWalletAddress(address.slice(0, 4) + '...' + address.slice(-4));
+        setWalletAddress(address.slice(0, 4) + '...' + address.slice(-4), address);
         setWalletType('solana');
 
-        // Fetch real SOL balance - try multiple RPC endpoints
         const rpcEndpoints = [
           'https://api.mainnet-beta.solana.com',
           'https://solana-mainnet.g.alchemy.com/v2/demo',
@@ -91,9 +84,8 @@ export function Header() {
             });
             const data = await res.json();
             if (data.result?.value !== undefined) {
-              // Convert lamports to SOL (1 SOL = 1e9 lamports)
               const solBalance = data.result.value / 1e9;
-              setBalance(Math.round(solBalance * 1000) / 1000); // Show 3 decimal places
+              setBalance(Math.round(solBalance * 1000) / 1000);
               balanceFetched = true;
             }
           } catch (e) {
@@ -102,7 +94,6 @@ export function Header() {
         }
 
         if (!balanceFetched) {
-          console.error('All Solana RPC endpoints failed');
           setBalance(0);
         }
       } catch (err) {
@@ -111,22 +102,19 @@ export function Header() {
       }
     } else if (ethereum) {
       try {
-        // Only requests public address - no private key access
         const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
         if (accounts[0]) {
           setIsConnected(true);
-          setWalletAddress(accounts[0].slice(0, 6) + '...' + accounts[0].slice(-4));
+          setWalletAddress(accounts[0].slice(0, 6) + '...' + accounts[0].slice(-4), accounts[0]);
           setWalletType('ethereum');
 
-          // Fetch real ETH balance
           try {
             const balanceHex = await ethereum.request({
               method: 'eth_getBalance',
               params: [accounts[0], 'latest'],
             });
-            // Convert from wei to ETH
             const ethBalance = parseInt(balanceHex, 16) / 1e18;
-            setBalance(Math.round(ethBalance * 10000) / 10000); // Show ETH balance
+            setBalance(Math.round(ethBalance * 10000) / 10000);
           } catch {
             setBalance(0);
           }
@@ -141,7 +129,7 @@ export function Header() {
 
   const handleDisconnect = () => {
     setIsConnected(false);
-    setWalletAddress(null);
+    setWalletAddress(null, null);
     setBalance(0);
     setWalletType(null);
     setShowWalletMenu(false);
@@ -160,7 +148,6 @@ export function Header() {
   const unreadCount = notifications.filter(n => n.unread).length;
 
   const openDashboard = () => {
-    // Reset to 3-panel dashboard view
     const marketTab = tabs.find(t => t.type === 'markets');
     const flowTab = tabs.find(t => t.type === 'flow');
     const chatTab = tabs.find(t => t.type === 'chat');
@@ -177,98 +164,136 @@ export function Header() {
   };
 
   return (
-    <header className="h-12 bg-black border-b border-[#1a1a1a] flex items-center justify-between px-4">
+    <header className="h-14 bg-[#F8F4E8] border-b-2 border-[#D4CDB8] flex items-center justify-between px-4 shadow-sm">
       {/* Logo */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         <button
           onClick={openDashboard}
-          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          className="flex items-center gap-3 hover:scale-105 transition-transform group"
         >
-          <Image
-            src="/brand/icon.png"
-            alt="Apella"
-            width={24}
-            height={24}
-          />
-          <Image
-            src="/brand/logo.png"
-            alt="apella.fun"
-            width={100}
-            height={28}
-            className="h-5 w-auto hidden sm:block opacity-90"
-          />
+          {/* Helmet Logo */}
+          <div className="relative">
+            <Image
+              src="/brand/helmet-logo.png"
+              alt="PumpBet"
+              width={40}
+              height={40}
+              className="helmet-wobble"
+            />
+          </div>
+          {/* Brand Text */}
+          <div className="hidden sm:flex items-baseline">
+            <span className="text-xl text-[#5A6A4D] font-hyperbole tracking-tight">pump</span>
+            <span className="text-xl text-[#3A4A2D]" style={{ fontFamily: 'Bambino, sans-serif' }}>bet.fun</span>
+          </div>
         </button>
+
+        {/* Nav Pills */}
+        <div className="hidden lg:flex items-center gap-1 ml-4">
+          <button
+            onClick={() => addTab({ type: 'kols', title: 'Trenches', color: '#6B7B5E' })}
+            className="px-3 py-1.5 text-sm text-[#5A6A4D] hover:bg-[#EFEAD9] rounded-full transition-colors font-bambino"
+          >
+            Trenches
+          </button>
+          <button
+            onClick={() => addTab({ type: 'coins', title: 'Coins', color: '#5C8A4A' })}
+            className="px-3 py-1.5 text-sm text-[#5A6A4D] hover:bg-[#EFEAD9] rounded-full transition-colors font-bambino"
+          >
+            Coins
+          </button>
+          <button
+            onClick={() => addTab({ type: 'traders', title: 'Leaderboard', color: '#8B7355' })}
+            className="px-3 py-1.5 text-sm text-[#5A6A4D] hover:bg-[#EFEAD9] rounded-full transition-colors font-bambino"
+          >
+            Leaderboard
+          </button>
+        </div>
       </div>
 
-      {/* Center - tagline */}
-      <div className="flex-1 flex justify-center">
-        <span className="text-xs text-[#444] hidden md:block">conquer the markets</span>
+      {/* Center - Fun tagline */}
+      <div className="hidden md:flex items-center gap-2">
+        <span className="text-sm text-[#8B9B7E] font-bambino">bet on the trenches</span>
+        <span className="text-[#D4CDB8]">|</span>
+        <span className="text-xs text-[#9AAA8D] font-satoshi">built on solana</span>
       </div>
 
       {/* Right Actions */}
       <div className="flex items-center gap-2">
-        {/* $APELLA Token Button */}
+        {/* Flywheel Button */}
+        <Link
+          href="/flywheel"
+          className="group flex items-center gap-2 px-3 py-2 bg-[#EFEAD9] hover:bg-[#E8E2D0] border-2 border-[#D4CDB8] hover:border-[#6B7B5E] rounded-xl transition-all"
+          title="Tokenomics"
+        >
+          <Image
+            src="/brand/flywheel.png"
+            alt="Flywheel"
+            width={20}
+            height={20}
+            className="group-hover:animate-spin-slow"
+            style={{ animationDuration: '2s' }}
+          />
+          <span className="text-xs text-[#5A6A4D] group-hover:text-[#3A4A2D] transition-colors hidden sm:block font-bambino">
+            Flywheel
+          </span>
+        </Link>
+
+        {/* $PUMPBET Token Button */}
         <a
           href="https://pump.fun"
           target="_blank"
           rel="noopener noreferrer"
-          className="group relative overflow-hidden rounded-lg"
+          className="group flex items-center gap-2 px-4 py-2 bg-[#6B7B5E] hover:bg-[#5A6A4D] border-2 border-[#4A5A3D] rounded-xl transition-all hover:scale-105 shadow-md"
         >
-          {/* Texture background */}
-          <div
-            className="absolute inset-0 animate-texture-scroll opacity-60 group-hover:opacity-80 transition-opacity"
-            style={{
-              backgroundImage: 'url(/brand/pixel-texture.jpeg)',
-              backgroundSize: '200% 100%',
-              backgroundRepeat: 'repeat-x',
-            }}
-          />
-          {/* Shine effect */}
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12" />
-          </div>
-          {/* Border glow */}
-          <div className="absolute inset-0 rounded-lg border border-[#ff0000]/40 group-hover:border-[#ff0000]/80 group-hover:shadow-[0_0_15px_rgba(255,0,0,0.3)] transition-all duration-300" />
-          {/* Content */}
-          <div className="relative px-4 py-1.5 flex items-center gap-2">
-            <span className="text-sm font-bold text-white drop-shadow-[0_0_8px_rgba(255,68,0,0.8)]">$APELLA</span>
-          </div>
+          <Coins className="w-4 h-4 text-[#E4D4B8]" />
+          <span className="text-sm font-bold text-[#E4D4B8] font-bambino">$PUMPBET</span>
         </a>
 
         {/* X (Twitter) Link */}
         <a
-          href="https://x.com/ApellaDotFun"
+          href="https://x.com/PumpBetFun"
           target="_blank"
           rel="noopener noreferrer"
-          className="p-2 hover:bg-[#111] rounded-lg transition-colors"
+          className="p-2 hover:bg-[#EFEAD9] rounded-xl transition-colors border-2 border-transparent hover:border-[#D4CDB8]"
           title="Follow on X"
         >
-          <svg className="w-4 h-4 text-[#666] hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
+          <svg className="w-4 h-4 text-[#5A6A4D] hover:text-[#3A4A2D] transition-colors" viewBox="0 0 24 24" fill="currentColor">
             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
           </svg>
         </a>
+
+        {/* Pending Transactions Indicator */}
+        {pendingTransactions.length > 0 && (
+          <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#D4A060]/20 border-2 border-[#D4A060]/40 rounded-xl">
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-[#D4A060]" />
+            <span className="text-xs font-bold text-[#D4A060] font-bambino">
+              {pendingTransactions.length} tx
+            </span>
+          </div>
+        )}
 
         {/* Notifications */}
         <div className="relative" ref={notificationRef}>
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="p-2 hover:bg-[#111] rounded-lg transition-colors relative"
+            className="p-2 hover:bg-[#EFEAD9] rounded-xl transition-colors relative border-2 border-transparent hover:border-[#D4CDB8]"
             title="Alerts"
           >
-            <Bell className="w-4 h-4 text-[#666] hover:text-white transition-colors" />
+            <Bell className="w-4 h-4 text-[#5A6A4D]" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 w-2 h-2 bg-[#ef4444] rounded-full animate-pulse" />
+              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#C45A4A] rounded-full animate-pulse border border-[#F8F4E8]" />
             )}
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 top-full mt-2 w-80 bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg shadow-xl z-50 overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a1a]">
-                <span className="text-sm font-medium text-white">Notifications</span>
+            <div className="absolute right-0 top-full mt-2 w-80 bg-[#F8F4E8] border-2 border-[#D4CDB8] rounded-xl shadow-xl z-50 overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b-2 border-[#D4CDB8] bg-[#EFEAD9]">
+                <span className="text-sm font-bold text-[#3A4A2D] font-bambino">Notifications</span>
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllAsRead}
-                    className="text-xs text-[#666] hover:text-white transition-colors"
+                    className="text-xs text-[#6B7B5E] hover:text-[#3A4A2D] transition-colors font-bambino"
                   >
                     Mark all read
                   </button>
@@ -276,7 +301,7 @@ export function Header() {
               </div>
               <div className="max-h-80 overflow-y-auto">
                 {notifications.length === 0 ? (
-                  <div className="p-4 text-center text-sm text-[#555]">
+                  <div className="p-4 text-center text-sm text-[#8B9B7E] font-bambino">
                     No notifications
                   </div>
                 ) : (
@@ -284,30 +309,30 @@ export function Header() {
                     <button
                       key={notification.id}
                       onClick={() => markAsRead(notification.id)}
-                      className={`w-full px-4 py-3 flex items-start gap-3 hover:bg-[#111] transition-colors text-left ${
-                        notification.unread ? 'bg-[#111]/50' : ''
+                      className={`w-full px-4 py-3 flex items-start gap-3 hover:bg-[#EFEAD9] transition-colors text-left ${
+                        notification.unread ? 'bg-[#E8E2D0]' : ''
                       }`}
                     >
-                      <div className={`mt-0.5 w-2 h-2 rounded-full flex-shrink-0 ${
-                        notification.unread ? 'bg-[#3b82f6]' : 'bg-[#333]'
+                      <div className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${
+                        notification.unread ? 'bg-[#5C8A4A]' : 'bg-[#D4CDB8]'
                       }`} />
                       <div className="flex-1 min-w-0">
-                        <p className={`text-sm ${notification.unread ? 'text-white' : 'text-[#888]'}`}>
+                        <p className={`text-sm font-bambino ${notification.unread ? 'text-[#3A4A2D]' : 'text-[#6B7B5E]'}`}>
                           {notification.text}
                         </p>
-                        <span className="text-xs text-[#555]">{notification.time}</span>
+                        <span className="text-xs text-[#8B9B7E] font-satoshi">{notification.time}</span>
                       </div>
                     </button>
                   ))
                 )}
               </div>
-              <div className="px-4 py-3 border-t border-[#1a1a1a]">
+              <div className="px-4 py-3 border-t-2 border-[#D4CDB8] bg-[#EFEAD9]">
                 <button
                   onClick={() => {
-                    addTab({ type: 'alerts', title: 'Alerts', color: '#ec4899' });
+                    addTab({ type: 'alerts', title: 'Alerts', color: '#C45A4A' });
                     setShowNotifications(false);
                   }}
-                  className="text-xs text-[#666] hover:text-white transition-colors"
+                  className="text-xs text-[#6B7B5E] hover:text-[#3A4A2D] transition-colors font-bambino"
                 >
                   View all alerts →
                 </button>
@@ -317,13 +342,13 @@ export function Header() {
         </div>
 
         {/* Divider */}
-        <div className="w-px h-5 bg-[#1a1a1a] mx-2" />
+        <div className="w-px h-6 bg-[#D4CDB8] mx-1" />
 
         {isConnected ? (
           <>
-            {/* Balance */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg">
-              <span className="text-sm text-[#22c55e] font-medium tabular-nums">
+            {/* Balance - Dog tag style */}
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-gradient-to-br from-[#A08B70] to-[#8B7355] rounded-md shadow-inner">
+              <span className="text-sm text-[#F5F0E1] font-bold font-satoshi tabular-nums">
                 {balance.toLocaleString()} {walletType === 'solana' ? 'SOL' : walletType === 'ethereum' ? 'ETH' : ''}
               </span>
             </div>
@@ -332,48 +357,48 @@ export function Header() {
             <div className="relative" ref={walletRef}>
               <button
                 onClick={() => setShowWalletMenu(!showWalletMenu)}
-                className="flex items-center gap-2 bg-[#0a0a0a] hover:bg-[#111] border border-[#1a1a1a] hover:border-[#333] rounded-lg px-3 py-1.5 transition-all"
+                className="flex items-center gap-2 bg-[#EFEAD9] hover:bg-[#E8E2D0] border-2 border-[#D4CDB8] hover:border-[#6B7B5E] rounded-xl px-3 py-1.5 transition-all"
               >
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] flex items-center justify-center">
-                  <span className="text-[10px] text-white font-medium">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#6B7B5E] to-[#4A5A3D] flex items-center justify-center border border-[#3A4A2D]">
+                  <span className="text-[10px] text-[#E4D4B8] font-bold font-satoshi">
                     {walletAddress?.slice(2, 4).toUpperCase()}
                   </span>
                 </div>
-                <span className="text-sm text-[#888] font-mono hover:text-white transition-colors hidden sm:block">
+                <span className="text-sm text-[#5A6A4D] font-mono hover:text-[#3A4A2D] transition-colors hidden sm:block">
                   {walletAddress}
                 </span>
-                <ChevronDown className={`w-3 h-3 text-[#555] transition-transform ${showWalletMenu ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-3 h-3 text-[#6B7B5E] transition-transform ${showWalletMenu ? 'rotate-180' : ''}`} />
               </button>
 
               {showWalletMenu && (
-                <div className="absolute right-0 top-full mt-2 w-48 bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg shadow-xl z-50 overflow-hidden">
+                <div className="absolute right-0 top-full mt-2 w-48 bg-[#F8F4E8] border-2 border-[#D4CDB8] rounded-xl shadow-xl z-50 overflow-hidden">
                   <button
                     onClick={() => {
                       setShowSettings(true);
                       setShowWalletMenu(false);
                     }}
-                    className="w-full px-4 py-2.5 flex items-center gap-2 hover:bg-[#111] transition-colors text-left"
+                    className="w-full px-4 py-2.5 flex items-center gap-2 hover:bg-[#EFEAD9] transition-colors text-left"
                   >
-                    <Wallet className="w-4 h-4 text-[#666]" />
-                    <span className="text-sm text-[#888]">Settings</span>
+                    <Settings className="w-4 h-4 text-[#6B7B5E]" />
+                    <span className="text-sm text-[#5A6A4D] font-bambino">Settings</span>
                   </button>
                   <button
                     onClick={() => {
-                      addTab({ type: 'portfolio', title: 'Portfolio', color: '#8b5cf6' });
+                      addTab({ type: 'portfolio', title: 'Portfolio', color: '#6B7B5E' });
                       setShowWalletMenu(false);
                     }}
-                    className="w-full px-4 py-2.5 flex items-center gap-2 hover:bg-[#111] transition-colors text-left"
+                    className="w-full px-4 py-2.5 flex items-center gap-2 hover:bg-[#EFEAD9] transition-colors text-left"
                   >
-                    <Zap className="w-4 h-4 text-[#666]" />
-                    <span className="text-sm text-[#888]">Portfolio</span>
+                    <Trophy className="w-4 h-4 text-[#6B7B5E]" />
+                    <span className="text-sm text-[#5A6A4D] font-bambino">Portfolio</span>
                   </button>
-                  <div className="border-t border-[#1a1a1a]" />
+                  <div className="border-t-2 border-[#D4CDB8]" />
                   <button
                     onClick={handleDisconnect}
-                    className="w-full px-4 py-2.5 flex items-center gap-2 hover:bg-[#111] transition-colors text-left"
+                    className="w-full px-4 py-2.5 flex items-center gap-2 hover:bg-[#EFEAD9] transition-colors text-left"
                   >
-                    <LogOut className="w-4 h-4 text-[#ef4444]" />
-                    <span className="text-sm text--[#ef4444]">Disconnect</span>
+                    <LogOut className="w-4 h-4 text-[#C45A4A]" />
+                    <span className="text-sm text-[#C45A4A] font-bambino">Disconnect</span>
                   </button>
                 </div>
               )}
@@ -381,20 +406,19 @@ export function Header() {
           </>
         ) : (
           <div className="flex items-center gap-2">
-            {/* Settings button - accessible without connection */}
             <button
               onClick={() => setShowSettings(true)}
-              className="p-2 hover:bg-[#111] rounded-lg transition-colors"
+              className="p-2 hover:bg-[#EFEAD9] rounded-xl transition-colors border-2 border-transparent hover:border-[#D4CDB8]"
               title="Settings"
             >
-              <Settings className="w-4 h-4 text-[#666] hover:text-white transition-colors" />
+              <Settings className="w-4 h-4 text-[#5A6A4D]" />
             </button>
             <button
               onClick={handleConnect}
-              className="flex items-center gap-2 bg-white hover:bg-[#f0f0f0] text-black font-medium rounded-lg px-4 py-1.5 transition-all"
+              className="flex items-center gap-2 bg-[#6B7B5E] hover:bg-[#5A6A4D] text-[#E4D4B8] font-bold rounded-xl px-4 py-2 transition-all hover:scale-105 shadow-md border-2 border-[#4A5A3D]"
             >
               <Wallet className="w-4 h-4" />
-              <span className="text-sm">Connect</span>
+              <span className="text-sm font-bambino">Connect</span>
             </button>
           </div>
         )}

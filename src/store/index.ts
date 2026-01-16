@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { fetchAllMarkets, generateFlowTrades, searchMarkets } from '@/lib/api/markets';
 
-export type TabType = 'markets' | 'event' | 'flow' | 'research' | 'chat' | 'traders' | 'alerts' | 'portfolio' | 'wallet' | 'bonds' | 'calendar' | 'new';
+export type TabType = 'markets' | 'event' | 'flow' | 'research' | 'chat' | 'traders' | 'alerts' | 'portfolio' | 'wallet' | 'bonds' | 'calendar' | 'kols' | 'trenches' | 'coins' | 'new';
 
 export interface Tab {
   id: string;
@@ -92,6 +92,63 @@ export interface Settings {
   darkMode: boolean;
 }
 
+export interface KOLBet {
+  id: string;
+  name: string;
+  ticker: string;
+  image: string;
+  category: 'kol' | 'crypto' | 'token';
+  bannerColor: string;
+  mainStat: string;
+  description: string;
+  endTime: Date;
+  yesPool: number;
+  noPool: number;
+  userPosition: number;
+  userPnl: string;
+  isLive: boolean;
+}
+
+// Coin types for community submissions
+export interface Coin {
+  id: string;
+  name: string;
+  ticker: string;
+  image: string | null;
+  description: string;
+  contract_address: string | null;
+  website: string | null;
+  twitter: string | null;
+  category: 'memecoin' | 'defi' | 'gaming' | 'ai' | 'other';
+  submitted_by: string;
+  upvotes: number;
+  downvotes: number;
+  is_featured: boolean;
+  market_id: string | null;
+  created_at: string;
+}
+
+// Transaction types for tracking SOL movements
+export interface PendingTransaction {
+  id: string;
+  signature: string;
+  type: 'bet' | 'liquidity_add' | 'liquidity_remove' | 'payout';
+  amount: number;
+  status: 'pending' | 'confirming' | 'confirmed' | 'failed';
+  betId?: string;
+  side?: 'yes' | 'no';
+  createdAt: Date;
+}
+
+// Liquidity position types
+export interface LiquidityPosition {
+  id: string;
+  marketId: string;
+  amount: number;
+  shares: number;
+  createdAt: string;
+}
+
 interface AppState {
   // Tabs
   tabs: Tab[];
@@ -162,13 +219,45 @@ interface AppState {
 
   // Wallet
   walletAddress: string | null;
+  walletAddressFull: string | null;
   balance: number;
   isConnected: boolean;
   walletType: 'solana' | 'ethereum' | null;
-  setWalletAddress: (address: string | null) => void;
+  setWalletAddress: (address: string | null, full?: string | null) => void;
   setBalance: (balance: number) => void;
   setIsConnected: (connected: boolean) => void;
   setWalletType: (type: 'solana' | 'ethereum' | null) => void;
+
+  // KOL Bets
+  kolBets: KOLBet[];
+  kolBetsLoading: boolean;
+  selectedKolBet: KOLBet | null;
+  setSelectedKolBet: (bet: KOLBet | null) => void;
+  fetchKolBets: () => Promise<void>;
+  placeBet: (betId: string, side: 'yes' | 'no', amount: number) => Promise<{ success: boolean; message: string }>;
+
+  // User Positions
+  userPositions: any[];
+  fetchUserPositions: () => Promise<void>;
+
+  // Coins (community submissions)
+  coins: Coin[];
+  coinsLoading: boolean;
+  fetchCoins: (category?: string) => Promise<void>;
+  submitCoin: (coin: Omit<Coin, 'id' | 'upvotes' | 'downvotes' | 'is_featured' | 'market_id' | 'created_at'>) => Promise<{ success: boolean; message: string }>;
+  voteCoin: (coinId: string, voteType: 'up' | 'down') => Promise<{ success: boolean; upvotes: number; downvotes: number; isFeatured: boolean }>;
+
+  // Pending Transactions
+  pendingTransactions: PendingTransaction[];
+  addPendingTransaction: (tx: PendingTransaction) => void;
+  updateTransactionStatus: (signature: string, status: PendingTransaction['status']) => void;
+  removePendingTransaction: (signature: string) => void;
+
+  // Liquidity Positions
+  userLPPositions: LiquidityPosition[];
+  fetchUserLPPositions: () => Promise<void>;
+  addLiquidity: (marketId: string, amount: number) => Promise<{ success: boolean; message: string }>;
+  removeLiquidity: (marketId: string) => Promise<{ success: boolean; message: string }>;
 }
 
 // Mock data
@@ -556,12 +645,144 @@ const mockFlowTrades: FlowTrade[] = [
   },
 ];
 
+// Mock KOL bets data
+const mockKOLBets: KOLBet[] = [
+  {
+    id: 'kol-1',
+    name: 'Alon',
+    ticker: '$ALON',
+    image: '/kols/alon.jpeg',
+    category: 'kol',
+    bannerColor: '#3B82F6',
+    mainStat: '3 Main Tweets',
+    description: 'Will Alon have More than 3 Main Tweets This Month',
+    endTime: new Date(Date.now() + 17 * 24 * 60 * 60 * 1000),
+    yesPool: 0,
+    noPool: 0,
+    userPosition: 0,
+    userPnl: 'N/A',
+    isLive: true,
+  },
+  {
+    id: 'kol-2',
+    name: 'White Whale',
+    ticker: '$WHALE',
+    image: '/kols/whitewhale.jpeg',
+    category: 'kol',
+    bannerColor: '#3B82F6',
+    mainStat: '$500 Million',
+    description: 'Will the White Whale surpass $500 Million Market Cap By February',
+    endTime: new Date(Date.now() + 17 * 24 * 60 * 60 * 1000),
+    yesPool: 0.01,
+    noPool: 0.05,
+    userPosition: 0,
+    userPnl: 'N/A',
+    isLive: true,
+  },
+  {
+    id: 'kol-3',
+    name: 'Cented',
+    ticker: '$CENTED',
+    image: '/kols/cented.png',
+    category: 'kol',
+    bannerColor: '#3B82F6',
+    mainStat: '465k Followers',
+    description: 'Will Cented reach 465k X Followers in the Next 7 Days',
+    endTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 16 * 60 * 60 * 1000),
+    yesPool: 0,
+    noPool: 0,
+    userPosition: 0,
+    userPnl: 'N/A',
+    isLive: true,
+  },
+  {
+    id: 'kol-4',
+    name: 'Orangie',
+    ticker: '$ORANGIE',
+    image: '/kols/orangie.jpeg',
+    category: 'kol',
+    bannerColor: '#3B82F6',
+    mainStat: '3 Posts',
+    description: 'Will Orangie Web3 Release 3 Videos This January',
+    endTime: new Date(Date.now() + 17 * 24 * 60 * 60 * 1000),
+    yesPool: 0,
+    noPool: 0,
+    userPosition: 0,
+    userPnl: 'N/A',
+    isLive: true,
+  },
+  {
+    id: 'kol-5',
+    name: 'Leck',
+    ticker: '$LECK',
+    image: '/kols/leck.png',
+    category: 'kol',
+    bannerColor: '#3B82F6',
+    mainStat: 'Top 10',
+    description: 'Will Leck Finish Top 10 Monthly PNL on KOL scan',
+    endTime: new Date(Date.now() + 17 * 24 * 60 * 60 * 1000),
+    yesPool: 0,
+    noPool: 0,
+    userPosition: 0,
+    userPnl: 'N/A',
+    isLive: true,
+  },
+  {
+    id: 'kol-6',
+    name: 'Cupsey',
+    ticker: '$CUPSEY',
+    image: '/kols/cupsey.jpeg',
+    category: 'kol',
+    bannerColor: '#3B82F6',
+    mainStat: '$675k PNL',
+    description: 'Will Cupsey end January with a $675k PNL',
+    endTime: new Date(Date.now() + 17 * 24 * 60 * 60 * 1000),
+    yesPool: 0,
+    noPool: 0.13,
+    userPosition: 0,
+    userPnl: 'N/A',
+    isLive: true,
+  },
+  {
+    id: 'kol-7',
+    name: 'Bitcoin',
+    ticker: '$BITCOIN',
+    image: '/kols/bitcoin.webp',
+    category: 'crypto',
+    bannerColor: '#3B82F6',
+    mainStat: '$100k',
+    description: 'Will Bitcoin Surpass $100k By February',
+    endTime: new Date(Date.now() + 17 * 24 * 60 * 60 * 1000),
+    yesPool: 0,
+    noPool: 0,
+    userPosition: 0,
+    userPnl: 'N/A',
+    isLive: true,
+  },
+  {
+    id: 'kol-8',
+    name: 'Dingaling',
+    ticker: '$DINGALING',
+    image: '/kols/dingaling.jpeg',
+    category: 'kol',
+    bannerColor: '#3B82F6',
+    mainStat: '1M Followers',
+    description: 'Will Dingaling reach 1M X Followers This Quarter',
+    endTime: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    yesPool: 0.5,
+    noPool: 0.25,
+    userPosition: 0,
+    userPnl: 'N/A',
+    isLive: true,
+  },
+];
+
 export const useStore = create<AppState>((set, get) => ({
-  // Tabs - Multi-panel default view: Markets, Whale Flow, Quick Chat
+  // Tabs - Multi-panel default view: Trenches (KOL+Markets), Whale Flow, Chat
   tabs: [
-    { id: 'tab-1', type: 'markets', title: 'Markets', color: '#ff0000' },
+    { id: 'tab-1', type: 'trenches', title: 'Trenches', color: '#3B82F6' },
     { id: 'tab-2', type: 'flow', title: 'Whale Flow', color: '#22c55e' },
-    { id: 'tab-3', type: 'chat', title: 'Quick Chat', color: '#f59e0b' },
+    { id: 'tab-3', type: 'chat', title: 'Chat', color: '#f59e0b' },
   ],
   activeTabId: 'tab-1',
 
@@ -802,11 +1023,593 @@ export const useStore = create<AppState>((set, get) => ({
 
   // Wallet
   walletAddress: null,
+  walletAddressFull: null,
   balance: 0,
   isConnected: false,
   walletType: null,
-  setWalletAddress: (address) => set({ walletAddress: address }),
+  setWalletAddress: (address, full) => set({ walletAddress: address, walletAddressFull: full ?? address }),
   setBalance: (balance) => set({ balance }),
   setIsConnected: (connected) => set({ isConnected: connected }),
   setWalletType: (type) => set({ walletType: type }),
+
+  // KOL Bets
+  kolBets: mockKOLBets,
+  kolBetsLoading: false,
+  selectedKolBet: null,
+  setSelectedKolBet: (bet) => set({ selectedKolBet: bet }),
+
+  fetchKolBets: async () => {
+    set({ kolBetsLoading: true });
+    try {
+      const response = await fetch('/api/bets?status=active');
+      const data = await response.json();
+
+      if (data.success && data.bets) {
+        // Transform API bets to match the KOLBet interface
+        const transformedBets: KOLBet[] = data.bets.map((bet: any) => ({
+          id: bet.id,
+          name: bet.kolName,
+          ticker: bet.kolTicker,
+          image: bet.kolImage,
+          category: bet.category,
+          bannerColor: '#3B82F6',
+          mainStat: bet.title,
+          description: bet.description,
+          endTime: new Date(bet.endTime),
+          yesPool: bet.yesPool,
+          noPool: bet.noPool,
+          userPosition: 0,
+          userPnl: 'N/A',
+          isLive: bet.status === 'active',
+        }));
+        set({ kolBets: transformedBets, kolBetsLoading: false });
+      } else {
+        set({ kolBetsLoading: false });
+      }
+    } catch (error) {
+      console.error('Error fetching KOL bets:', error);
+      set({ kolBetsLoading: false });
+    }
+  },
+
+  placeBet: async (betId, side, amount) => {
+    const { walletAddressFull, isConnected, walletType, addPendingTransaction, updateTransactionStatus, removePendingTransaction } = get();
+
+    if (!isConnected || !walletAddressFull) {
+      return { success: false, message: 'Please connect your wallet first' };
+    }
+
+    if (amount <= 0) {
+      return { success: false, message: 'Amount must be greater than 0' };
+    }
+
+    // For Solana wallet - use real SOL transfer
+    if (walletType === 'solana') {
+      const phantom = (window as any).phantom?.solana;
+      if (!phantom) {
+        return { success: false, message: 'Phantom wallet not found' };
+      }
+
+      try {
+        // Step 1: Prepare the transaction on the server
+        const prepareResponse = await fetch(`/api/bets/${betId}/prepare`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            side,
+            amount,
+            walletAddress: walletAddressFull,
+          }),
+        });
+
+        const prepareData = await prepareResponse.json();
+
+        if (!prepareData.success) {
+          return { success: false, message: prepareData.error || 'Failed to prepare transaction' };
+        }
+
+        // Step 2: Deserialize and sign the transaction
+        const { Transaction, VersionedTransaction } = await import('@solana/web3.js');
+        const transactionBuffer = Buffer.from(prepareData.transaction, 'base64');
+
+        let signedTransaction;
+        try {
+          // Try versioned transaction first
+          const transaction = VersionedTransaction.deserialize(transactionBuffer);
+          signedTransaction = await phantom.signTransaction(transaction);
+        } catch {
+          // Fallback to legacy transaction
+          const transaction = Transaction.from(transactionBuffer);
+          signedTransaction = await phantom.signTransaction(transaction);
+        }
+
+        // Step 3: Send the signed transaction
+        const { Connection } = await import('@solana/web3.js');
+        const connection = new Connection(
+          process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com',
+          'confirmed'
+        );
+
+        const rawTransaction = signedTransaction.serialize();
+        const signature = await connection.sendRawTransaction(rawTransaction, {
+          skipPreflight: false,
+          preflightCommitment: 'confirmed',
+        });
+
+        // Add to pending transactions
+        const txId = `tx-${Date.now()}`;
+        addPendingTransaction({
+          id: txId,
+          signature,
+          type: 'bet',
+          amount,
+          status: 'confirming',
+          betId,
+          side,
+          createdAt: new Date(),
+        });
+
+        // Step 4: Confirm the transaction with the server
+        const confirmResponse = await fetch(`/api/bets/${betId}/confirm`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            signature,
+            side,
+            amount,
+            walletAddress: walletAddressFull,
+          }),
+        });
+
+        const confirmData = await confirmResponse.json();
+
+        if (confirmData.success) {
+          updateTransactionStatus(signature, 'confirmed');
+          // Remove from pending after a short delay to show success state
+          setTimeout(() => removePendingTransaction(signature), 5000);
+
+          // Deduct from balance locally
+          set((state) => ({ balance: Math.max(0, state.balance - amount) }));
+          // Refresh bets to get updated pools
+          get().fetchKolBets();
+          get().fetchUserPositions();
+          return {
+            success: true,
+            message: `Bet placed successfully! TX: ${signature.slice(0, 8)}...`
+          };
+        } else {
+          updateTransactionStatus(signature, 'failed');
+          return { success: false, message: confirmData.error || 'Transaction verification failed' };
+        }
+      } catch (error: any) {
+        console.error('Error placing bet:', error);
+        if (error.code === 4001 || error.message?.includes('rejected')) {
+          return { success: false, message: 'Transaction rejected by user' };
+        }
+        if (error.message?.includes('insufficient')) {
+          return { success: false, message: 'Insufficient SOL balance' };
+        }
+        return { success: false, message: error.message || 'Failed to process transaction' };
+      }
+    }
+
+    // Fallback for non-Solana wallets or demo mode
+    try {
+      const response = await fetch(`/api/bets/${betId}/place`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          side,
+          amount,
+          walletAddress: walletAddressFull,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        get().fetchKolBets();
+        get().fetchUserPositions();
+        return { success: true, message: data.message };
+      } else {
+        return { success: false, message: data.error || 'Failed to place bet' };
+      }
+    } catch (error) {
+      console.error('Error placing bet:', error);
+      return { success: false, message: 'Network error. Please try again.' };
+    }
+  },
+
+  // User Positions
+  userPositions: [],
+  fetchUserPositions: async () => {
+    const { walletAddress, isConnected } = get();
+
+    if (!isConnected || !walletAddress) {
+      set({ userPositions: [] });
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/user/positions?wallet=${walletAddress}`);
+      const data = await response.json();
+
+      if (data.success) {
+        set({ userPositions: data.positions });
+      }
+    } catch (error) {
+      console.error('Error fetching positions:', error);
+    }
+  },
+
+  // Coins (community submissions)
+  coins: [],
+  coinsLoading: false,
+
+  fetchCoins: async (category?: string) => {
+    set({ coinsLoading: true });
+    try {
+      const url = category && category !== 'all'
+        ? `/api/coins?category=${category}`
+        : '/api/coins';
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.success && data.coins) {
+        set({ coins: data.coins, coinsLoading: false });
+      } else {
+        set({ coinsLoading: false });
+      }
+    } catch (error) {
+      console.error('Error fetching coins:', error);
+      set({ coinsLoading: false });
+    }
+  },
+
+  submitCoin: async (coin) => {
+    const { walletAddressFull, isConnected } = get();
+
+    if (!isConnected || !walletAddressFull) {
+      return { success: false, message: 'Please connect your wallet first' };
+    }
+
+    try {
+      const response = await fetch('/api/coins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...coin,
+          walletAddress: walletAddressFull,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Refresh coins list
+        get().fetchCoins();
+        return { success: true, message: data.message };
+      } else {
+        return { success: false, message: data.error || 'Failed to submit coin' };
+      }
+    } catch (error) {
+      console.error('Error submitting coin:', error);
+      return { success: false, message: 'Network error. Please try again.' };
+    }
+  },
+
+  voteCoin: async (coinId, voteType) => {
+    const { walletAddressFull, isConnected } = get();
+
+    if (!isConnected || !walletAddressFull) {
+      return { success: false, upvotes: 0, downvotes: 0, isFeatured: false };
+    }
+
+    try {
+      const response = await fetch(`/api/coins/${coinId}/vote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          voteType,
+          walletAddress: walletAddressFull,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update coin in local state
+        set((state) => ({
+          coins: state.coins.map((c) =>
+            c.id === coinId
+              ? {
+                  ...c,
+                  upvotes: data.upvotes,
+                  downvotes: data.downvotes,
+                  is_featured: data.isFeatured,
+                  market_id: data.marketId || c.market_id,
+                }
+              : c
+          ),
+        }));
+
+        // If coin was just promoted, refresh KOL bets
+        if (data.wasPromoted) {
+          get().fetchKolBets();
+        }
+
+        return {
+          success: true,
+          upvotes: data.upvotes,
+          downvotes: data.downvotes,
+          isFeatured: data.isFeatured,
+        };
+      } else {
+        return { success: false, upvotes: 0, downvotes: 0, isFeatured: false };
+      }
+    } catch (error) {
+      console.error('Error voting on coin:', error);
+      return { success: false, upvotes: 0, downvotes: 0, isFeatured: false };
+    }
+  },
+
+  // Pending Transactions
+  pendingTransactions: [],
+
+  addPendingTransaction: (tx) => {
+    set((state) => ({
+      pendingTransactions: [tx, ...state.pendingTransactions],
+    }));
+  },
+
+  updateTransactionStatus: (idOrSignature, status) => {
+    set((state) => ({
+      pendingTransactions: state.pendingTransactions.map((tx) =>
+        (tx.id === idOrSignature || tx.signature === idOrSignature) ? { ...tx, status } : tx
+      ),
+    }));
+  },
+
+  removePendingTransaction: (idOrSignature) => {
+    set((state) => ({
+      pendingTransactions: state.pendingTransactions.filter(
+        (tx) => tx.id !== idOrSignature && tx.signature !== idOrSignature
+      ),
+    }));
+  },
+
+  // Liquidity Positions
+  userLPPositions: [],
+
+  fetchUserLPPositions: async () => {
+    const { walletAddressFull, isConnected, kolBets } = get();
+
+    if (!isConnected || !walletAddressFull) {
+      set({ userLPPositions: [] });
+      return;
+    }
+
+    try {
+      // Fetch LP positions for each market
+      const lpPositions: LiquidityPosition[] = [];
+
+      for (const bet of kolBets) {
+        const response = await fetch(
+          `/api/markets/${bet.id}/liquidity?wallet=${walletAddressFull}`
+        );
+        const data = await response.json();
+
+        if (data.success && data.userPosition) {
+          lpPositions.push({
+            id: data.userPosition.id,
+            marketId: bet.id,
+            amount: data.userPosition.amount,
+            shares: data.userPosition.shares,
+            createdAt: data.userPosition.createdAt,
+          });
+        }
+      }
+
+      set({ userLPPositions: lpPositions });
+    } catch (error) {
+      console.error('Error fetching LP positions:', error);
+    }
+  },
+
+  addLiquidity: async (marketId, amount) => {
+    const { walletAddressFull, isConnected, walletType, addPendingTransaction, updateTransactionStatus, removePendingTransaction } = get();
+
+    if (!isConnected || !walletAddressFull) {
+      return { success: false, message: 'Please connect your wallet first' };
+    }
+
+    if (amount <= 0) {
+      return { success: false, message: 'Amount must be greater than 0' };
+    }
+
+    // For Solana wallet - use real SOL transfer
+    if (walletType === 'solana') {
+      const phantom = (window as any).phantom?.solana;
+      if (!phantom) {
+        return { success: false, message: 'Phantom wallet not found' };
+      }
+
+      try {
+        // Step 1: Prepare the transaction
+        const prepareResponse = await fetch(`/api/markets/${marketId}/liquidity`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'prepare',
+            amount,
+            walletAddress: walletAddressFull,
+          }),
+        });
+
+        const prepareData = await prepareResponse.json();
+
+        if (!prepareData.success) {
+          return { success: false, message: prepareData.error || 'Failed to prepare transaction' };
+        }
+
+        // Demo mode check
+        if (prepareData.isDemo) {
+          // Skip actual transaction signing in demo mode
+          const addResponse = await fetch(`/api/markets/${marketId}/liquidity`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'add',
+              amount,
+              walletAddress: walletAddressFull,
+            }),
+          });
+
+          const addData = await addResponse.json();
+
+          if (addData.success) {
+            get().fetchUserLPPositions();
+            get().fetchKolBets();
+            return { success: true, message: addData.message };
+          } else {
+            return { success: false, message: addData.error || 'Failed to add liquidity' };
+          }
+        }
+
+        // Step 2: Sign and send transaction
+        const { Transaction, VersionedTransaction, Connection } = await import('@solana/web3.js');
+        const transactionBuffer = Buffer.from(prepareData.transaction, 'base64');
+
+        let signedTransaction;
+        try {
+          const transaction = VersionedTransaction.deserialize(transactionBuffer);
+          signedTransaction = await phantom.signTransaction(transaction);
+        } catch {
+          const transaction = Transaction.from(transactionBuffer);
+          signedTransaction = await phantom.signTransaction(transaction);
+        }
+
+        const connection = new Connection(
+          process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com',
+          'confirmed'
+        );
+
+        const rawTransaction = signedTransaction.serialize();
+        const signature = await connection.sendRawTransaction(rawTransaction, {
+          skipPreflight: false,
+          preflightCommitment: 'confirmed',
+        });
+
+        // Add to pending transactions
+        addPendingTransaction({
+          id: `lp-${Date.now()}`,
+          signature,
+          type: 'liquidity_add',
+          amount,
+          status: 'confirming',
+          betId: marketId,
+          createdAt: new Date(),
+        });
+
+        // Step 3: Confirm with server
+        const confirmResponse = await fetch(`/api/markets/${marketId}/liquidity`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'add',
+            amount,
+            walletAddress: walletAddressFull,
+            signature,
+          }),
+        });
+
+        const confirmData = await confirmResponse.json();
+
+        if (confirmData.success) {
+          updateTransactionStatus(signature, 'confirmed');
+          setTimeout(() => removePendingTransaction(signature), 5000);
+
+          get().fetchUserLPPositions();
+          get().fetchKolBets();
+          return {
+            success: true,
+            message: `Added ${amount} SOL liquidity! TX: ${signature.slice(0, 8)}...`
+          };
+        } else {
+          updateTransactionStatus(signature, 'failed');
+          return { success: false, message: confirmData.error || 'Failed to confirm liquidity' };
+        }
+      } catch (error: any) {
+        console.error('Error adding liquidity:', error);
+        if (error.code === 4001 || error.message?.includes('rejected')) {
+          return { success: false, message: 'Transaction rejected by user' };
+        }
+        return { success: false, message: error.message || 'Failed to add liquidity' };
+      }
+    }
+
+    // Demo mode fallback
+    try {
+      const response = await fetch(`/api/markets/${marketId}/liquidity`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'add',
+          amount,
+          walletAddress: walletAddressFull,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        get().fetchUserLPPositions();
+        get().fetchKolBets();
+        return { success: true, message: data.message };
+      } else {
+        return { success: false, message: data.error || 'Failed to add liquidity' };
+      }
+    } catch (error) {
+      console.error('Error adding liquidity:', error);
+      return { success: false, message: 'Network error. Please try again.' };
+    }
+  },
+
+  removeLiquidity: async (marketId) => {
+    const { walletAddressFull, isConnected, userLPPositions } = get();
+
+    if (!isConnected || !walletAddressFull) {
+      return { success: false, message: 'Please connect your wallet first' };
+    }
+
+    const lpPosition = userLPPositions.find(lp => lp.marketId === marketId);
+    if (!lpPosition) {
+      return { success: false, message: 'No liquidity position found for this market' };
+    }
+
+    try {
+      const response = await fetch(`/api/markets/${marketId}/liquidity`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'remove',
+          walletAddress: walletAddressFull,
+          lpPositionId: lpPosition.id,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        get().fetchUserLPPositions();
+        get().fetchKolBets();
+        return { success: true, message: data.message };
+      } else {
+        return { success: false, message: data.error || 'Failed to remove liquidity' };
+      }
+    } catch (error) {
+      console.error('Error removing liquidity:', error);
+      return { success: false, message: 'Network error. Please try again.' };
+    }
+  },
 }));

@@ -103,89 +103,82 @@ export function FlowPanel({ onMarketClick }: FlowPanelProps) {
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-black">
-      {/* Animated texture accent bar */}
-      <div
-        className="w-full h-3 flex-shrink-0 animate-texture-scroll"
-        style={{
-          backgroundImage: 'url(/brand/pixel-texture.jpeg)',
-          backgroundSize: '200% 100%',
-          backgroundRepeat: 'repeat-x',
-        }}
-      />
+    <div className="flex flex-col h-full bg-[#F5F0E1]">
+      {/* Decorative top stripe */}
+      <div className="w-full h-2 flex-shrink-0 bg-gradient-to-r from-[#6B7B5E] via-[#8B7355] to-[#6B7B5E]" />
 
       {/* Header Title */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-[#1a1a1a]">
-        <Zap className="w-4 h-4 text-white" />
-        <span className="text-sm font-medium text-white">Whale Flow</span>
+      <div className="flex items-center gap-2 px-4 py-3 border-b-2 border-[#E8E2D0]">
+        <Zap className="w-4 h-4 text-[#5A6A4D]" />
+        <span className="text-sm font-bambino font-bold text-[#3A4A2D]">Whale Flow</span>
         {isLive ? (
-          <span className="flex items-center gap-1.5 px-2 py-0.5 bg-[#22c55e] text-white text-[8px] font-semibold rounded uppercase">
-            <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+          <span className="flex items-center gap-1.5 px-2 py-0.5 bg-[#5C8A4A] text-[#F5F0E1] text-[8px] font-bambino font-bold rounded-lg uppercase">
+            <span className="w-1.5 h-1.5 bg-[#F5F0E1] rounded-full animate-pulse" />
             LIVE
           </span>
         ) : (
-          <span className="px-2 py-0.5 bg-[#333] text-[#888] text-[8px] font-semibold rounded uppercase">PAUSED</span>
+          <span className="px-2 py-0.5 bg-[#D4CDB8] text-[#6B7B5E] text-[8px] font-bambino font-bold rounded-lg uppercase">PAUSED</span>
         )}
-        <span className="text-[10px] text-[#444] ml-1">{tradesCount} trades today</span>
+        <span className="text-[10px] text-[#8B9B7E] ml-1 font-bambino">{tradesCount} trades today</span>
         <div className="flex-1" />
         <Image
-          src="/brand/icon.png"
+          src="/brand/helmet-logo.png"
           alt=""
           width={16}
           height={16}
-          className="opacity-30"
+          className="opacity-40"
         />
       </div>
 
       {/* Filters Header */}
-      <div className="p-3 border-b border-[#1a1a1a] space-y-3">
+      <div className="p-3 border-b-2 border-[#E8E2D0] space-y-3 bg-[#EFEAD9]">
         {/* Size and Price Filters */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-[#555] uppercase tracking-wider">SIZE</span>
-            <span className="text-[#555]">$</span>
+            <span className="text-[10px] text-[#8B9B7E] uppercase tracking-wider font-bambino font-bold">SIZE</span>
+            <span className="text-[#8B9B7E]">$</span>
             <input
               type="number"
               value={flowFilters.minSize}
               onChange={(e) => setFlowFilter('minSize', Number(e.target.value))}
-              className="w-20 bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg px-2 py-1 text-sm text-white focus:outline-none focus:border-[#333]"
+              className="w-20 bg-[#F5F0E1] border-2 border-[#D4CDB8] rounded-xl px-2 py-1 text-sm text-[#3A4A2D] focus:outline-none focus:border-[#6B7B5E] font-satoshi"
             />
             <button
               onClick={() => setFlowFilter('minSize', 0)}
-              className="text-[#555] hover:text-white p-1"
+              className="text-[#8B9B7E] hover:text-[#C45A4A] p-1"
             >
               <X className="w-3 h-3" />
             </button>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-[#555] uppercase tracking-wider">PRICE</span>
+            <span className="text-[10px] text-[#8B9B7E] uppercase tracking-wider font-bambino font-bold">PRICE</span>
             <input
               type="number"
               value={flowFilters.priceMin}
               onChange={(e) => setFlowFilter('priceMin', Number(e.target.value))}
-              className="w-12 bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-[#333]"
+              className="w-12 bg-[#F5F0E1] border-2 border-[#D4CDB8] rounded-xl px-2 py-1 text-sm text-[#3A4A2D] text-center focus:outline-none focus:border-[#6B7B5E] font-satoshi"
             />
-            <span className="text-[#444]">—</span>
+            <span className="text-[#8B9B7E]">—</span>
             <input
               type="number"
               value={flowFilters.priceMax}
               onChange={(e) => setFlowFilter('priceMax', Number(e.target.value))}
-              className="w-12 bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-[#333]"
+              className="w-12 bg-[#F5F0E1] border-2 border-[#D4CDB8] rounded-xl px-2 py-1 text-sm text-[#3A4A2D] text-center focus:outline-none focus:border-[#6B7B5E] font-satoshi"
             />
             <button
               onClick={() => { setFlowFilter('priceMin', 1); setFlowFilter('priceMax', 99); }}
-              className="text-[#555] hover:text-white p-1"
+              className="text-[#8B9B7E] hover:text-[#C45A4A] p-1"
             >
               <X className="w-3 h-3" />
             </button>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-[#555] uppercase tracking-wider">SORT</span>
+            <span className="text-[10px] text-[#8B9B7E] uppercase tracking-wider font-bambino font-bold">SORT</span>
             <button
               onClick={() => setSortBy(sortBy === 'recent' ? 'size' : sortBy === 'size' ? 'multiplier' : 'recent')}
-              className="flex items-center gap-1 px-3 py-1 bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg text-sm text-[#888] hover:border-[#333] transition-colors"
+              className="flex items-center gap-1 px-3 py-1 bg-[#F5F0E1] border-2 border-[#D4CDB8] rounded-xl text-sm text-[#6B7B5E] hover:border-[#6B7B5E] transition-colors font-bambino"
             >
               {sortBy === 'recent' ? 'Recent' : sortBy === 'size' ? 'Size' : 'Multiplier'} <ChevronDown className="w-3 h-3" />
             </button>
@@ -196,15 +189,15 @@ export function FlowPanel({ onMarketClick }: FlowPanelProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {/* All/Buy/Sell */}
-            <div className="flex items-center bg-[#0a0a0a] rounded-lg p-0.5 border border-[#1a1a1a]">
+            <div className="flex items-center bg-[#F5F0E1] rounded-xl p-0.5 border-2 border-[#D4CDB8]">
               {['all', 'buy', 'sell'].map((side) => (
                 <button
                   key={side}
                   onClick={() => setFlowFilter('side', side)}
-                  className={`px-3 py-1 rounded text-xs uppercase transition-all duration-200 ${
+                  className={`px-3 py-1 rounded-lg text-xs uppercase transition-all duration-200 font-bambino font-bold ${
                     flowFilters.side === side
-                      ? 'bg-[#141414] text-white'
-                      : 'text-[#555] hover:text-[#888]'
+                      ? 'bg-[#6B7B5E] text-[#F5F0E1]'
+                      : 'text-[#8B9B7E] hover:text-[#5A6A4D]'
                   }`}
                 >
                   {side === 'all' ? 'ALL' : side.toUpperCase()}
@@ -213,15 +206,15 @@ export function FlowPanel({ onMarketClick }: FlowPanelProps) {
             </div>
 
             {/* All/Yes/No */}
-            <div className="flex items-center bg-[#0a0a0a] rounded-lg p-0.5 border border-[#1a1a1a]">
+            <div className="flex items-center bg-[#F5F0E1] rounded-xl p-0.5 border-2 border-[#D4CDB8]">
               {['all', 'yes', 'no'].map((outcome) => (
                 <button
                   key={outcome}
                   onClick={() => setFlowFilter('outcome', outcome)}
-                  className={`px-3 py-1 rounded text-xs uppercase transition-all duration-200 ${
+                  className={`px-3 py-1 rounded-lg text-xs uppercase transition-all duration-200 font-bambino font-bold ${
                     flowFilters.outcome === outcome
-                      ? 'bg-[#141414] text-white'
-                      : 'text-[#555] hover:text-[#888]'
+                      ? 'bg-[#6B7B5E] text-[#F5F0E1]'
+                      : 'text-[#8B9B7E] hover:text-[#5A6A4D]'
                   }`}
                 >
                   {outcome === 'all' ? 'ALL' : outcome.toUpperCase()}
@@ -234,21 +227,21 @@ export function FlowPanel({ onMarketClick }: FlowPanelProps) {
             {/* New Wallets Toggle */}
             <button
               onClick={() => setFlowFilter('newWalletsOnly', !flowFilters.newWalletsOnly)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all duration-200 ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm transition-all duration-200 font-bambino font-bold ${
                 flowFilters.newWalletsOnly
-                  ? 'bg-white text-black'
-                  : 'bg-[#0a0a0a] text-[#666] border border-[#1a1a1a] hover:text-[#888]'
+                  ? 'bg-[#6B7B5E] text-[#F5F0E1]'
+                  : 'bg-[#F5F0E1] text-[#6B7B5E] border-2 border-[#D4CDB8] hover:border-[#6B7B5E]'
               }`}
             >
               <Sparkles className="w-4 h-4" />
               New Wallets
             </button>
 
-            <span className="text-[10px] text-[#444]">{getTimeSinceRefresh()}</span>
+            <span className="text-[10px] text-[#8B9B7E] font-bambino">{getTimeSinceRefresh()}</span>
             <button
               onClick={() => setIsLive(!isLive)}
-              className={`p-1.5 rounded transition-all duration-200 ${
-                isLive ? 'hover:bg-[#141414] text-[#22c55e]' : 'hover:bg-[#141414] text-[#555]'
+              className={`p-1.5 rounded-lg transition-all duration-200 ${
+                isLive ? 'hover:bg-[#F5F0E1] text-[#5C8A4A]' : 'hover:bg-[#F5F0E1] text-[#8B9B7E]'
               }`}
             >
               {isLive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
@@ -258,7 +251,7 @@ export function FlowPanel({ onMarketClick }: FlowPanelProps) {
       </div>
 
       {/* Table Header */}
-      <div className="grid grid-cols-6 gap-4 px-4 py-2 border-b border-[#1a1a1a] text-[10px] text-[#555] uppercase tracking-wider">
+      <div className="grid grid-cols-6 gap-4 px-4 py-2 border-b-2 border-[#E8E2D0] text-[10px] text-[#8B9B7E] uppercase tracking-wider font-bambino font-bold bg-[#EFEAD9]">
         <span>TIME</span>
         <span>MARKET</span>
         <span>SIDE</span>
@@ -268,12 +261,12 @@ export function FlowPanel({ onMarketClick }: FlowPanelProps) {
       </div>
 
       {/* Trades List */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto bg-[#EFEAD9]">
         {sortedTrades.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-[#444]">
+          <div className="flex flex-col items-center justify-center h-full text-[#8B9B7E]">
             <Zap className="w-8 h-8 mb-2" />
-            <span className="text-sm">Waiting for whale trades...</span>
-            {isLive && <span className="text-xs mt-1 animate-pulse">Streaming live data</span>}
+            <span className="text-sm font-bambino">Waiting for whale trades...</span>
+            {isLive && <span className="text-xs mt-1 animate-pulse font-bambino">Streaming live data</span>}
           </div>
         ) : (
           sortedTrades.map((trade, idx) => (
@@ -327,9 +320,9 @@ function FlowTradeRow({
   };
 
   const getOutcomeColor = (outcome: string) => {
-    if (['Y', 'yes', 'Up', 'O'].includes(outcome)) return 'bg-[#22c55e]';
-    if (['N', 'no', 'Down', 'U'].includes(outcome)) return 'bg-[#3b82f6]';
-    return 'bg-[#666]';
+    if (['Y', 'yes', 'Up', 'O'].includes(outcome)) return 'bg-[#5C8A4A]';
+    if (['N', 'no', 'Down', 'U'].includes(outcome)) return 'bg-[#5A7A9A]';
+    return 'bg-[#8B9B7E]';
   };
 
   // Determine if this is a mega trade
@@ -378,65 +371,65 @@ function FlowTradeRow({
     <div
       onClick={openMarket}
       className={`
-        grid grid-cols-6 gap-4 px-4 py-3 border-b border-[#1a1a1a]
-        hover:bg-[#0a0a0a] cursor-pointer transition-all duration-300 hover:pl-5
-        ${isNewlyAdded ? 'animate-slide-in-left bg-[#0f1a0f] border-l-2 border-l-[#22c55e]' : ''}
-        ${isMegaTrade ? 'bg-[#1a1510]' : ''}
+        grid grid-cols-6 gap-4 px-4 py-3 border-b-2 border-[#E8E2D0]
+        hover:bg-[#F5F0E1] cursor-pointer transition-all duration-300 hover:pl-5
+        ${isNewlyAdded ? 'animate-slide-in-left bg-[#5C8A4A]/10 border-l-4 border-l-[#5C8A4A]' : ''}
+        ${isMegaTrade ? 'bg-[#8B7355]/10' : ''}
       `}
       style={{ animationDelay: `${animationDelay}ms` }}
     >
       {/* Time */}
       <div className="flex items-center gap-2">
-        <span className={`text-sm ${isNewlyAdded ? 'text-white' : 'text-[#666]'}`}>
+        <span className={`text-sm font-satoshi ${isNewlyAdded ? 'text-[#3A4A2D]' : 'text-[#6B7B5E]'}`}>
           {formatTime(trade.time)}
         </span>
         {trade.isNew && (
-          <span className="bg-white text-black text-[9px] px-1.5 py-0.5 rounded font-medium animate-pulse">NEW</span>
+          <span className="bg-[#6B7B5E] text-[#F5F0E1] text-[9px] px-1.5 py-0.5 rounded-lg font-bambino font-bold animate-pulse">NEW</span>
         )}
       </div>
 
       {/* Market */}
       <div className="flex items-center gap-2">
-        <div className={`w-8 h-8 rounded-lg bg-[#0f0f0f] flex items-center justify-center flex-shrink-0 ${isNewlyAdded ? 'ring-1 ring-[#22c55e]/30' : ''}`}>
+        <div className={`w-8 h-8 rounded-xl bg-[#F5F0E1] border-2 border-[#D4CDB8] flex items-center justify-center flex-shrink-0 ${isNewlyAdded ? 'ring-2 ring-[#5C8A4A]/30' : ''}`}>
           {getMarketLogo()}
         </div>
-        <span className={`text-sm truncate ${isNewlyAdded ? 'text-white font-medium' : 'text-white'}`}>
+        <span className={`text-sm truncate font-bambino ${isNewlyAdded ? 'text-[#3A4A2D] font-bold' : 'text-[#3A4A2D]'}`}>
           {trade.marketTitle}
         </span>
       </div>
 
       {/* Side */}
       <div className="flex items-center gap-1">
-        <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-medium ${
-          trade.side === 'buy' ? 'bg-[#22c55e]/20 text-[#22c55e]' : 'bg-[#ef4444]/20 text-[#ef4444]'
+        <span className={`w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-bambino font-bold ${
+          trade.side === 'buy' ? 'bg-[#5C8A4A]/20 text-[#5C8A4A]' : 'bg-[#C45A4A]/20 text-[#C45A4A]'
         }`}>
           {trade.side === 'buy' ? 'B' : 'S'}
         </span>
-        <span className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-medium ${getOutcomeColor(trade.outcome)}/20 text-white`}>
+        <span className={`w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-bambino font-bold ${getOutcomeColor(trade.outcome)}/20 text-[#F5F0E1]`}>
           {trade.outcome}
         </span>
         {trade.side === 'buy' ? (
-          <TrendingUp className="w-3 h-3 text-[#22c55e]" />
+          <TrendingUp className="w-3 h-3 text-[#5C8A4A]" />
         ) : (
-          <TrendingDown className="w-3 h-3 text-[#ef4444]" />
+          <TrendingDown className="w-3 h-3 text-[#C45A4A]" />
         )}
       </div>
 
       {/* Size */}
-      <div className={`text-sm font-medium ${
-        isMegaTrade ? 'text-[#f59e0b]' : isLargeTrade ? 'text-white' : 'text-white'
+      <div className={`text-sm font-satoshi font-bold ${
+        isMegaTrade ? 'text-[#8B7355]' : isLargeTrade ? 'text-[#3A4A2D]' : 'text-[#3A4A2D]'
       }`}>
         <span className={isMegaTrade ? 'animate-pulse' : ''}>
           {formatSize(trade.size)}
         </span>
-        {isMegaTrade && <span className="ml-1 text-[9px] text-[#f59e0b]">MEGA</span>}
+        {isMegaTrade && <span className="ml-1 text-[9px] text-[#8B7355] font-bambino">MEGA</span>}
       </div>
 
       {/* Entry */}
       <div className="flex items-center gap-2">
-        <span className="text-sm text-white">{trade.price.toFixed(1)}¢</span>
-        <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-          trade.multiplier >= 2 ? 'bg-[#22c55e]/10 text-[#22c55e]' : 'bg-[#0f0f0f] text-[#555]'
+        <span className="text-sm text-[#3A4A2D] font-satoshi">{trade.price.toFixed(1)}¢</span>
+        <span className={`text-[10px] px-1.5 py-0.5 rounded-lg font-bambino font-bold ${
+          trade.multiplier >= 2 ? 'bg-[#5C8A4A]/10 text-[#5C8A4A]' : 'bg-[#EFEAD9] text-[#8B9B7E]'
         }`}>
           {trade.multiplier.toFixed(1)}x
         </span>
@@ -444,8 +437,8 @@ function FlowTradeRow({
 
       {/* Wallet */}
       <div className="flex items-center gap-1">
-        <span className="text-sm text-[#666] font-mono">{trade.wallet}</span>
-        <ExternalLink className="w-3 h-3 text-[#444]" />
+        <span className="text-sm text-[#6B7B5E] font-mono">{trade.wallet}</span>
+        <ExternalLink className="w-3 h-3 text-[#8B9B7E]" />
       </div>
     </div>
   );

@@ -2,42 +2,105 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Satoshi Font */
+/* ============================================
+   PUMPBET.FUN - BRAND FONTS
+   ============================================ */
+
+/* Hyperbole - Creative Display Font (for "pump" branding) */
+@font-face {
+  font-family: 'Hyperbole';
+  src: url('/fonts/Hyperbole-P9gg.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Bambino - Friendly Body Font (for "bet.fun" and body text) */
+@font-face {
+  font-family: 'Bambino';
+  src: url('/fonts/Bambino.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Satoshi - Clean UI Font (for data/numbers) */
 @import url('https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700&display=swap');
 
 /* ============================================
-   DESIGN SYSTEM - APELLA.FUN
-   Clean dark mode with minimal accents
+   DESIGN SYSTEM - PUMPBET.FUN
+   Trench warfare meets fun betting
+   Cream/Olive color palette
    ============================================ */
 
 :root {
-  /* Colors - Dark mode focused */
-  --background: #000000;
-  --surface: #0a0a0a;
-  --surface-light: #111111;
-  --surface-hover: #161616;
-  --border: #1a1a1a;
-  --border-light: #222222;
+  /* Primary Background - Cream tones */
+  --bg-cream: #F5F0E1;
+  --bg-cream-dark: #EAE4D4;
+  --bg-cream-darker: #DDD5C3;
 
-  /* Primary is used sparingly */
-  --primary: #ff0000;
-  --primary-dark: #cc0000;
+  /* Card/Panel backgrounds - Slightly darker cream */
+  --bg-card: #EFEAD9;
+  --bg-card-hover: #E8E2D0;
+  --bg-elevated: #F8F4E8;
+
+  /* Olive greens - From the helmet */
+  --olive: #6B7B5E;
+  --olive-dark: #5A6A4D;
+  --olive-darker: #4A5A3D;
+  --olive-light: #7C8D6E;
+  --olive-muted: #8B9B7E;
+
+  /* Brown accents - From the straps */
+  --brown: #8B7355;
+  --brown-dark: #6B5A45;
+  --brown-light: #A08B70;
+
+  /* Tan/Beige - Text on helmet */
+  --tan: #D4C4A8;
+  --tan-dark: #C4B498;
+  --tan-light: #E4D4B8;
 
   /* Text colors */
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0a0;
-  --text-muted: #666666;
-  --text-dim: #444444;
+  --text-primary: #3A4A2D;
+  --text-secondary: #5A6A4D;
+  --text-tertiary: #7A8A6D;
+  --text-muted: #9AAA8D;
+  --text-light: #F5F0E1;
 
-  /* Accent colors for data */
-  --accent-green: #22c55e;
-  --accent-red: #ef4444;
-  --accent-blue: #3b82f6;
+  /* Borders */
+  --border: #D4CDB8;
+  --border-dark: #B4AD98;
+  --border-light: #E4DBC8;
 
-  /* Consistent border radius */
-  --radius-sm: 6px;
-  --radius: 8px;
-  --radius-lg: 12px;
+  /* Semantic colors */
+  --green: #5C8A4A;
+  --green-bright: #6B9E58;
+  --green-dark: #4A7038;
+  --red: #C45A4A;
+  --red-bright: #D46858;
+  --red-dark: #A44A3A;
+  --blue: #5A7A9A;
+
+  /* Fun accent colors */
+  --accent-yellow: #E8D080;
+  --accent-orange: #D4A060;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Border radius - More playful/rounded */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
 }
 
 * {
@@ -46,49 +109,75 @@
 
 html,
 body {
-  background: var(--background);
+  background: var(--bg-cream);
   color: var(--text-primary);
-  font-family: 'Satoshi', system-ui, sans-serif;
+  font-family: 'Bambino', 'Satoshi', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* ============================================
-   SCROLLBAR - Subtle
+   CUSTOM FONT UTILITIES
    ============================================ */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.font-hyperbole {
+  font-family: 'Hyperbole', sans-serif;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+.font-bambino {
+  font-family: 'Bambino', sans-serif;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #3a3a3a;
+.font-satoshi {
+  font-family: 'Satoshi', sans-serif;
 }
 
 /* ============================================
-   BUTTONS
+   SCROLLBAR - Olive themed
+   ============================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-cream-dark);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--olive-muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--olive);
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================
+   BUTTONS - Fun, rounded style
    ============================================ */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 10px 20px;
   font-size: 14px;
-  font-weight: 500;
-  border-radius: var(--radius);
-  transition: all 150ms ease;
+  font-weight: 600;
+  font-family: 'Bambino', sans-serif;
+  border-radius: var(--radius-lg);
+  transition: all 200ms ease;
   cursor: pointer;
-  border: none;
+  border: 2px solid transparent;
   outline: none;
 }
 
@@ -98,102 +187,153 @@ body {
 }
 
 .btn-primary {
-  background: white;
-  color: black;
+  background: var(--olive);
+  color: var(--tan-light);
+  border-color: var(--olive-dark);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #e0e0e0;
+  background: var(--olive-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(90, 106, 77, 0.3);
 }
 
 .btn-secondary {
-  background: var(--surface-light);
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: var(--surface-hover);
-  color: white;
-  border-color: var(--border-light);
+  background: var(--bg-card-hover);
+  border-color: var(--olive-muted);
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .btn-ghost:hover:not(:disabled) {
-  background: var(--surface-light);
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.btn-green {
+  background: var(--green);
   color: white;
+  border-color: var(--green-dark);
+}
+
+.btn-green:hover:not(:disabled) {
+  background: var(--green-bright);
+  transform: translateY(-2px);
+}
+
+.btn-red {
+  background: var(--red);
+  color: white;
+  border-color: var(--red-dark);
+}
+
+.btn-red:hover:not(:disabled) {
+  background: var(--red-bright);
+  transform: translateY(-2px);
 }
 
 /* ============================================
-   INPUTS
+   INPUTS - Soft rounded style
    ============================================ */
 .input {
   width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 10px 14px;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
   font-size: 14px;
-  color: white;
-  transition: all 150ms ease;
+  font-family: 'Bambino', sans-serif;
+  color: var(--text-primary);
+  transition: all 200ms ease;
 }
 
 .input::placeholder {
-  color: var(--text-dim);
+  color: var(--text-muted);
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--border-light);
-  background: var(--surface-light);
+  border-color: var(--olive);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(107, 123, 94, 0.1);
 }
 
 /* ============================================
-   CARDS
+   CARDS - Soft, playful style
    ============================================ */
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
   overflow: hidden;
+  transition: all 200ms ease;
 }
 
 .card:hover {
-  border-color: var(--border-light);
+  border-color: var(--olive-muted);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(74, 90, 61, 0.1);
+}
+
+/* Trench-style card with dashed border */
+.card-trench {
+  background: var(--bg-card);
+  border: 2px dashed var(--olive-muted);
+  border-radius: var(--radius-lg);
+}
+
+.card-trench:hover {
+  border-color: var(--olive);
+  border-style: solid;
 }
 
 /* ============================================
-   BADGES
+   BADGES - Fun pill style
    ============================================ */
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
-  font-size: 10px;
+  padding: 4px 12px;
+  font-size: 11px;
   font-weight: 600;
+  font-family: 'Bambino', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-radius: 4px;
+  border-radius: var(--radius-full);
 }
 
 .badge-default {
-  background: var(--surface-light);
-  color: var(--text-muted);
-  border: 1px solid var(--border);
+  background: var(--bg-cream-darker);
+  color: var(--text-secondary);
+}
+
+.badge-olive {
+  background: var(--olive);
+  color: var(--tan-light);
 }
 
 .badge-green {
-  background: rgba(34, 197, 94, 0.1);
-  color: var(--accent-green);
+  background: rgba(92, 138, 74, 0.15);
+  color: var(--green-dark);
 }
 
 .badge-red {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--accent-red);
+  background: rgba(196, 90, 74, 0.15);
+  color: var(--red-dark);
+}
+
+.badge-tan {
+  background: var(--tan);
+  color: var(--olive-darker);
 }
 
 /* ============================================
@@ -261,27 +401,34 @@ body {
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  50% { transform: translateY(-8px); }
 }
 
-@keyframes pulse-subtle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+@keyframes bounce-playful {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-5px) rotate(-2deg); }
+  75% { transform: translateY(-5px) rotate(2deg); }
 }
 
-@keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 5px rgba(255, 0, 0, 0.3); }
-  50% { box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); }
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
 }
 
-@keyframes texture-scroll {
-  0% { background-position: 0% center; }
-  100% { background-position: 100% center; }
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.02); }
 }
 
-@keyframes bounce-subtle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+@keyframes glisten {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes march {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(5px); }
 }
 
 .animate-fade-in {
@@ -308,39 +455,42 @@ body {
   animation: slide-in-left 400ms ease-out forwards;
 }
 
-@keyframes slide-in-down {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-.animate-slide-in-down {
-  animation: slide-in-down 300ms ease-out forwards;
-}
-
 .animate-float {
   animation: float 4s ease-in-out infinite;
 }
 
-.animate-pulse-subtle {
-  animation: pulse-subtle 2s ease-in-out infinite;
+.animate-bounce-playful {
+  animation: bounce-playful 2s ease-in-out infinite;
 }
 
-.animate-glow-pulse {
-  animation: glow-pulse 2s ease-in-out infinite;
+.animate-wiggle {
+  animation: wiggle 0.5s ease-in-out;
 }
 
-.animate-texture-scroll {
-  animation: texture-scroll 20s linear infinite;
+.animate-wiggle-infinite {
+  animation: wiggle 2s ease-in-out infinite;
 }
 
-.animate-bounce-subtle {
-  animation: bounce-subtle 2s ease-in-out infinite;
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+.animate-glisten {
+  animation: glisten 4s ease-in-out infinite;
+}
+
+.animate-march {
+  animation: march 1s ease-in-out infinite;
+}
+
+/* Mascot bounce animation */
+.mascot-bounce {
+  animation: bounce-playful 3s ease-in-out infinite;
+}
+
+/* Helmet wobble */
+.helmet-wobble:hover {
+  animation: wiggle 0.3s ease-in-out;
 }
 
 /* Staggered animation delays */
@@ -350,87 +500,170 @@ body {
 .animate-delay-400 { animation-delay: 400ms; }
 .animate-delay-500 { animation-delay: 500ms; }
 
-/* Smooth hover transitions for interactive elements */
+/* ============================================
+   HOVER EFFECTS
+   ============================================ */
 .hover-lift {
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
 .hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(74, 90, 61, 0.15);
 }
 
-.hover-glow {
-  transition: box-shadow 200ms ease;
+.hover-grow {
+  transition: transform 200ms ease;
 }
 
-.hover-glow:hover {
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+.hover-grow:hover {
+  transform: scale(1.02);
 }
 
-/* Mascot bounce animation */
-.mascot-bounce {
-  animation: bounce-subtle 3s ease-in-out infinite;
+.hover-olive {
+  transition: all 200ms ease;
+}
+
+.hover-olive:hover {
+  background: var(--olive);
+  color: var(--tan-light);
+  border-color: var(--olive);
 }
 
 /* ============================================
-   PRICE COLORS
+   PRICE/BETTING COLORS
    ============================================ */
-.text-green { color: var(--accent-green); }
-.text-red { color: var(--accent-red); }
-.bg-green { background: var(--accent-green); }
-.bg-red { background: var(--accent-red); }
+.text-bet-green { color: var(--green); }
+.text-bet-red { color: var(--red); }
+.bg-bet-green { background: var(--green); }
+.bg-bet-red { background: var(--red); }
 
 /* ============================================
    LAYOUT HELPERS
    ============================================ */
 .panel {
-  background: var(--background);
+  background: var(--bg-cream);
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
 .panel-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
+  border-bottom: 2px solid var(--border);
   display: flex;
   align-items: center;
   gap: 12px;
+  background: var(--bg-elevated);
 }
 
 .panel-content {
   flex: 1;
   overflow-y: auto;
+  padding: 16px;
 }
 
 /* ============================================
-   SHIMMER LOADING
+   TEXTURE OVERLAYS
    ============================================ */
-@keyframes shimmer {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 0.8; }
+.texture-paper {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
 }
 
-.shimmer {
-  background: var(--surface-light);
-  animation: shimmer 1.5s ease-in-out infinite;
+.texture-canvas {
+  background-image:
+    linear-gradient(90deg, rgba(107, 123, 94, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(107, 123, 94, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
 /* ============================================
-   FOCUS STATES - Subtle
+   SPECIAL ELEMENTS
    ============================================ */
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 2px solid var(--border-light);
-  outline-offset: 2px;
+
+/* Trench divider line */
+.divider-trench {
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--olive-muted) 0px,
+    var(--olive-muted) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+}
+
+/* Dog tag style label */
+.dog-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, var(--brown-light) 0%, var(--brown) 100%);
+  color: var(--tan-light);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.2),
+    0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Camouflage pattern background */
+.camo-bg {
+  background-color: var(--olive);
+  background-image:
+    radial-gradient(ellipse at 20% 30%, var(--olive-dark) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, var(--olive-light) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 50%, var(--brown) 0%, transparent 60%);
 }
 
 /* ============================================
    SELECTION
    ============================================ */
 ::selection {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+  background: rgba(107, 123, 94, 0.3);
+  color: var(--text-primary);
+}
+
+/* ============================================
+   MODAL ANIMATIONS
+   ============================================ */
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal-in {
+  animation: modal-in 300ms ease-out forwards;
+}
+
+/* ============================================
+   FOCUS STATES
+   ============================================ */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--olive-muted);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   RESPONSIVE HELPERS
+   ============================================ */
+@media (max-width: 768px) {
+  .panel-header {
+    padding: 12px 16px;
+  }
+
+  .panel-content {
+    padding: 12px;
+  }
 }

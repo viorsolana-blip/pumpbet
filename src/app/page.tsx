@@ -10,10 +10,87 @@ import { FlowPanel } from '@/components/panels/FlowPanel';
 import { ResearchCanvas } from '@/components/panels/ResearchCanvas';
 import { QuickChat } from '@/components/panels/QuickChat';
 import { NewTabPanel } from '@/components/panels/NewTabPanel';
+import { KOLPanel } from '@/components/panels/KOLPanel';
+import { TrenchesPanel } from '@/components/panels/TrenchesPanel';
+import { CoinsPanel } from '@/components/panels/CoinsPanel';
 import { SettingsModal } from '@/components/modals/SettingsModal';
 import { OnboardingModal } from '@/components/modals/OnboardingModal';
 import { TutorialModal } from '@/components/modals/TutorialModal';
 import { useStore, Tab } from '@/store';
+
+// Mobile detection overlay
+function MobileOverlay() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  if (!isMobile) return null;
+
+  return (
+    <div className="fixed inset-0 z-[9999] bg-[#030303] flex flex-col">
+      {/* Top texture bar */}
+      <div
+        className="h-1 w-full animate-texture-scroll"
+        style={{
+          backgroundImage: 'url(/brand/pixel-texture.jpeg)',
+          backgroundSize: '200% 100%',
+          backgroundRepeat: 'repeat-x',
+        }}
+      />
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col items-center justify-center px-8">
+        {/* Logo */}
+        <Image
+          src="/brand/logo.png"
+          alt="PumpBet"
+          width={140}
+          height={48}
+          className="mb-16"
+        />
+
+        {/* Simple message */}
+        <div className="text-center max-w-xs">
+          <p className="text-[#666] text-sm tracking-wide uppercase mb-3">
+            Desktop Only
+          </p>
+          <h1 className="text-white text-xl font-medium mb-6">
+            Open on your computer
+          </h1>
+          <div className="w-12 h-[1px] bg-[#1a1a1a] mx-auto mb-6" />
+          <p className="text-[#444] text-sm leading-relaxed">
+            PumpBet is a trench trading terminal built for desktop screens.
+          </p>
+        </div>
+      </div>
+
+      {/* Bottom section */}
+      <div className="pb-12 text-center">
+        <p className="text-[#333] text-xs tracking-wider uppercase">
+          pumpbet.fun
+        </p>
+      </div>
+
+      {/* Bottom texture bar */}
+      <div
+        className="h-1 w-full animate-texture-scroll"
+        style={{
+          backgroundImage: 'url(/brand/pixel-texture.jpeg)',
+          backgroundSize: '200% 100%',
+          backgroundRepeat: 'repeat-x',
+          animationDirection: 'reverse',
+        }}
+      />
+    </div>
+  );
+}
 
 export default function Home() {
   const {
@@ -38,9 +115,12 @@ export default function Home() {
   const [fullScreenTab, setFullScreenTab] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Show tutorial on every page load
+  // Show tutorial only on first visit
   useEffect(() => {
-    setShowTutorial(true);
+    const hasSeenTutorial = localStorage.getItem('pumpbet_tutorial_seen');
+    if (!hasSeenTutorial) {
+      setShowTutorial(true);
+    }
   }, [setShowTutorial]);
 
   // Handle drag resize
@@ -131,6 +211,10 @@ export default function Home() {
 
   const renderPanelContent = (tab: Tab, isFullScreen = false) => {
     switch (tab.type) {
+      case 'trenches':
+        return <TrenchesPanel />;
+      case 'coins':
+        return <CoinsPanel />;
       case 'markets':
         return <MarketsPanel />;
       case 'event':
@@ -144,6 +228,8 @@ export default function Home() {
         return <ResearchCanvas />;
       case 'chat':
         return <QuickChat />;
+      case 'kols':
+        return <KOLPanel />;
       case 'new':
         return <NewTabPanel />;
       case 'traders':
@@ -176,6 +262,7 @@ export default function Home() {
 
   return (
     <div className="h-screen flex flex-col bg-[#050505]">
+      <MobileOverlay />
       <Header />
 
       {/* Full Screen Mode - when clicking from whale flow */}
@@ -324,7 +411,7 @@ export default function Home() {
   );
 }
 
-// Placeholder panels for features not yet fully implemented
+// Leaderboard panel
 function TradersPanel() {
   const traders = [
     { rank: 1, name: 'TrumpWin123', score: 95, pnl: '+$36K', volume: '$211K', winRate: '68%' },
@@ -337,50 +424,52 @@ function TradersPanel() {
     { rank: 8, name: 'ValueHunter', score: 79, pnl: '+$8K', volume: '$43K', winRate: '66%' },
   ];
 
+  const getRankBadge = (rank: number) => {
+    if (rank === 1) return 'bg-[#D4A060] text-white';
+    if (rank === 2) return 'bg-[#A08B70] text-white';
+    if (rank === 3) return 'bg-[#8B7355] text-white';
+    return 'bg-[#EFEAD9] text-[#5A6A4D]';
+  };
+
   return (
-    <div className="h-full bg-[#050505] p-6 animate-fade-in">
-      {/* Texture bar */}
-      <div
-        className="absolute top-0 left-0 right-0 h-3 animate-texture-scroll"
-        style={{
-          backgroundImage: 'url(/brand/pixel-texture.jpeg)',
-          backgroundSize: '200% 100%',
-          backgroundRepeat: 'repeat-x',
-        }}
-      />
-      <h2 className="text-xl font-semibold text-white mb-6">Top Traders</h2>
-      <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg overflow-hidden">
+    <div className="h-full bg-[#F5F0E1] p-6 overflow-y-auto animate-fade-in">
+      <h2 className="text-xl font-bold text-[#3A4A2D] mb-6 font-bambino">Top Traders</h2>
+      <div className="bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[#1a1a1a]">
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">Rank</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">Trader</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">Score</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">P&L</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">Volume</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">Win Rate</th>
+            <tr className="border-b-2 border-[#D4CDB8] bg-[#E8E2D0]">
+              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Rank</th>
+              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Trader</th>
+              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Score</th>
+              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">P&L</th>
+              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Volume</th>
+              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Win Rate</th>
             </tr>
           </thead>
           <tbody>
             {traders.map((trader, idx) => (
               <tr
                 key={trader.rank}
-                className="border-b border-[#1a1a1a] last:border-0 hover:bg-[#0f0f0f] cursor-pointer animate-fade-in-up"
+                className="border-b border-[#D4CDB8] last:border-0 hover:bg-[#E8E2D0] cursor-pointer animate-fade-in-up transition-colors"
                 style={{ animationDelay: `${idx * 50}ms` }}
               >
-                <td className="px-4 py-3 text-sm text-[#555]">{trader.rank}</td>
+                <td className="px-4 py-3">
+                  <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${getRankBadge(trader.rank)}`}>
+                    {trader.rank}
+                  </span>
+                </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-[#22c55e] flex items-center justify-center">
-                      <span className="text-xs text-white font-medium">{trader.name.charAt(0)}</span>
+                    <div className="w-8 h-8 rounded-full bg-[#6B7B5E] flex items-center justify-center border-2 border-[#4A5A3D]">
+                      <span className="text-xs text-[#E4D4B8] font-bold">{trader.name.charAt(0)}</span>
                     </div>
-                    <span className="text-sm text-white">{trader.name}</span>
+                    <span className="text-sm text-[#3A4A2D] font-bambino">{trader.name}</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-sm text-white">{trader.score}</td>
-                <td className="px-4 py-3 text-sm text-[#22c55e]">{trader.pnl}</td>
-                <td className="px-4 py-3 text-sm text-[#666]">{trader.volume}</td>
-                <td className="px-4 py-3 text-sm text-[#666]">{trader.winRate}</td>
+                <td className="px-4 py-3 text-sm text-[#3A4A2D] font-bold font-satoshi">{trader.score}</td>
+                <td className="px-4 py-3 text-sm text-[#5C8A4A] font-bold font-satoshi">{trader.pnl}</td>
+                <td className="px-4 py-3 text-sm text-[#5A6A4D] font-satoshi">{trader.volume}</td>
+                <td className="px-4 py-3 text-sm text-[#5A6A4D] font-satoshi">{trader.winRate}</td>
               </tr>
             ))}
           </tbody>
@@ -391,93 +480,394 @@ function TradersPanel() {
 }
 
 function PortfolioPanel() {
-  const positions = [
-    { market: 'Los Angeles R - Super Bowl', outcome: 'Yes', shares: 150, avgPrice: 15.2, currentPrice: 17.8, pnl: '+$3.90' },
-    { market: 'Bitcoin Up/Down', outcome: 'Down', shares: 500, avgPrice: 85, currentPrice: 91, pnl: '+$30.00' },
-    { market: 'Will China invade Taiwan?', outcome: 'No', shares: 200, avgPrice: 86, currentPrice: 88.3, pnl: '+$4.60' },
-  ];
+  const { userPositions, fetchUserPositions, isConnected, walletType, walletAddressFull, userLPPositions, fetchUserLPPositions, addPendingTransaction, updateTransactionStatus, removePendingTransaction } = useStore();
+  const [claimablePositions, setClaimablePositions] = useState<any[]>([]);
+  const [claimableLPPositions, setClaimableLPPositions] = useState<any[]>([]);
+  const [totalClaimable, setTotalClaimable] = useState(0);
+  const [claiming, setClaiming] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'positions' | 'liquidity' | 'claimable'>('positions');
+
+  useEffect(() => {
+    if (isConnected) {
+      fetchUserPositions();
+      fetchUserLPPositions();
+    }
+  }, [isConnected, fetchUserPositions, fetchUserLPPositions]);
+
+  // Fetch claimable positions
+  useEffect(() => {
+    if (isConnected && walletAddressFull) {
+      fetch(`/api/user/claim?wallet=${walletAddressFull}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            setClaimablePositions(data.claimablePositions || []);
+            setClaimableLPPositions(data.claimableLPPositions || []);
+            setTotalClaimable(data.totalClaimable || 0);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [isConnected, walletAddressFull]);
+
+  const handleClaim = async (positionId: string, isLP: boolean = false) => {
+    if (!walletAddressFull) return;
+    setClaiming(positionId);
+
+    const txId = `claim-${Date.now()}`;
+    addPendingTransaction({
+      id: txId,
+      type: 'payout',
+      amount: 0,
+      status: 'pending',
+      signature: '',
+      createdAt: new Date(),
+    });
+
+    try {
+      const response = await fetch('/api/user/claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: walletAddressFull,
+          ...(isLP ? { lpPositionId: positionId } : { positionId }),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        updateTransactionStatus(txId, 'confirmed');
+        // Refresh claimable positions
+        const refreshRes = await fetch(`/api/user/claim?wallet=${walletAddressFull}`);
+        const refreshData = await refreshRes.json();
+        if (refreshData.success) {
+          setClaimablePositions(refreshData.claimablePositions || []);
+          setClaimableLPPositions(refreshData.claimableLPPositions || []);
+          setTotalClaimable(refreshData.totalClaimable || 0);
+        }
+        setTimeout(() => removePendingTransaction(txId), 5000);
+      } else {
+        updateTransactionStatus(txId, 'failed');
+        setTimeout(() => removePendingTransaction(txId), 5000);
+      }
+    } catch (error) {
+      console.error('Claim error:', error);
+      updateTransactionStatus(txId, 'failed');
+      setTimeout(() => removePendingTransaction(txId), 5000);
+    }
+
+    setClaiming(null);
+  };
+
+  // Calculate totals
+  const totalValue = userPositions.reduce((sum, pos) => sum + (pos.currentValue || 0), 0);
+  const totalPnl = userPositions.reduce((sum, pos) => sum + (pos.pnl || 0), 0);
+  const totalLP = userLPPositions.reduce((sum, lp) => sum + (lp.amount || 0), 0);
 
   return (
-    <div className="h-full bg-[#050505] p-6">
+    <div className="h-full bg-[#F5F0E1] p-6 overflow-y-auto">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-white">Portfolio</h2>
+        <h2 className="text-xl font-bold text-[#3A4A2D] font-bambino">Portfolio</h2>
         <div className="flex items-center gap-4">
           <div className="text-right">
-            <div className="text-[10px] text-[#555] uppercase tracking-wider">Total Value</div>
-            <div className="text-lg font-semibold text-white">$1,247.50</div>
+            <div className="text-[10px] text-[#8B9B7E] uppercase tracking-wider font-satoshi">Total Value</div>
+            <div className="text-lg font-bold text-[#3A4A2D] font-bambino">{totalValue.toFixed(3)} {walletType === 'solana' ? 'SOL' : 'ETH'}</div>
           </div>
           <div className="text-right">
-            <div className="text-[10px] text-[#555] uppercase tracking-wider">Total P&L</div>
-            <div className="text-lg font-semibold text-[#22c55e]">+$127.35</div>
+            <div className="text-[10px] text-[#8B9B7E] uppercase tracking-wider font-satoshi">Total P&L</div>
+            <div className={`text-lg font-bold font-bambino ${totalPnl >= 0 ? 'text-[#5C8A4A]' : 'text-[#C45A4A]'}`}>
+              {totalPnl >= 0 ? '+' : ''}{totalPnl.toFixed(3)} {walletType === 'solana' ? 'SOL' : 'ETH'}
+            </div>
           </div>
+          {totalClaimable > 0 && (
+            <div className="text-right px-3 py-1.5 bg-[#D4A060]/20 rounded-xl border-2 border-[#D4A060]/40">
+              <div className="text-[10px] text-[#D4A060] uppercase tracking-wider font-satoshi">Claimable</div>
+              <div className="text-lg font-bold text-[#D4A060] font-bambino">{totalClaimable.toFixed(3)} SOL</div>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-[#1a1a1a]">
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">Market</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">Position</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">Shares</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">Avg Price</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">Current</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">P&L</th>
-            </tr>
-          </thead>
-          <tbody>
-            {positions.map((pos, idx) => (
-              <tr key={idx} className="border-b border-[#1a1a1a] last:border-0 hover:bg-[#0f0f0f] cursor-pointer">
-                <td className="px-4 py-3 text-sm text-white">{pos.market}</td>
-                <td className="px-4 py-3">
-                  <span className={`px-2 py-0.5 rounded text-[10px] ${pos.outcome === 'Yes' ? 'bg-[#22c55e]/10 text-[#22c55e]' : 'bg-[#3b82f6]/10 text-[#3b82f6]'}`}>
-                    {pos.outcome}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-[#666]">{pos.shares}</td>
-                <td className="px-4 py-3 text-sm text-[#666]">{pos.avgPrice}¢</td>
-                <td className="px-4 py-3 text-sm text-white">{pos.currentPrice}¢</td>
-                <td className="px-4 py-3 text-sm text-[#22c55e]">{pos.pnl}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Tabs */}
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={() => setActiveTab('positions')}
+          className={`px-4 py-2 rounded-xl text-sm font-bambino transition-all ${
+            activeTab === 'positions'
+              ? 'bg-[#6B7B5E] text-[#E4D4B8] border-2 border-[#4A5A3D]'
+              : 'bg-[#EFEAD9] text-[#5A6A4D] border-2 border-[#D4CDB8] hover:border-[#6B7B5E]'
+          }`}
+        >
+          Positions ({userPositions.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('liquidity')}
+          className={`px-4 py-2 rounded-xl text-sm font-bambino transition-all ${
+            activeTab === 'liquidity'
+              ? 'bg-[#6B7B5E] text-[#E4D4B8] border-2 border-[#4A5A3D]'
+              : 'bg-[#EFEAD9] text-[#5A6A4D] border-2 border-[#D4CDB8] hover:border-[#6B7B5E]'
+          }`}
+        >
+          Liquidity ({userLPPositions.length})
+        </button>
+        {(claimablePositions.length > 0 || claimableLPPositions.length > 0) && (
+          <button
+            onClick={() => setActiveTab('claimable')}
+            className={`px-4 py-2 rounded-xl text-sm font-bambino transition-all ${
+              activeTab === 'claimable'
+                ? 'bg-[#D4A060] text-white border-2 border-[#B8884A]'
+                : 'bg-[#D4A060]/20 text-[#D4A060] border-2 border-[#D4A060]/40 hover:bg-[#D4A060]/30'
+            }`}
+          >
+            Claim ({claimablePositions.length + claimableLPPositions.length})
+          </button>
+        )}
       </div>
+
+      {!isConnected ? (
+        <div className="bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-2xl p-8 text-center">
+          <div className="text-[#6B7B5E] mb-2 font-bambino">Connect your wallet to view positions</div>
+        </div>
+      ) : activeTab === 'positions' ? (
+        userPositions.length === 0 ? (
+          <div className="bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-2xl p-8 text-center">
+            <div className="text-[#6B7B5E] font-bambino">No positions yet</div>
+            <div className="text-[#8B9B7E] text-sm mt-2 font-satoshi">Place bets on KOL markets to get started</div>
+          </div>
+        ) : (
+          <div className="bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-2xl overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b-2 border-[#D4CDB8] bg-[#E8E2D0]">
+                  <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Market</th>
+                  <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Position</th>
+                  <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Shares</th>
+                  <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Invested</th>
+                  <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Value</th>
+                  <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">P&L</th>
+                </tr>
+              </thead>
+              <tbody>
+                {userPositions.map((pos, idx) => (
+                  <tr key={pos.id || idx} className="border-b border-[#D4CDB8] last:border-0 hover:bg-[#E8E2D0] cursor-pointer transition-colors">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        {pos.bet?.kolImage && (
+                          <Image src={pos.bet.kolImage} alt={pos.bet?.kolName || ''} width={24} height={24} className="rounded-full border border-[#D4CDB8]" />
+                        )}
+                        <span className="text-sm text-[#3A4A2D] font-bambino">{pos.bet?.title || 'Unknown Market'}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-0.5 rounded-lg text-[10px] uppercase font-bold ${pos.side === 'yes' ? 'bg-[#5C8A4A]/20 text-[#5C8A4A]' : 'bg-[#C45A4A]/20 text-[#C45A4A]'}`}>
+                        {pos.side}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-[#5A6A4D] font-satoshi">{pos.shares?.toFixed(2)}</td>
+                    <td className="px-4 py-3 text-sm text-[#5A6A4D] font-satoshi">{pos.amount?.toFixed(3)} SOL</td>
+                    <td className="px-4 py-3 text-sm text-[#3A4A2D] font-bold font-satoshi">{pos.currentValue?.toFixed(3)} SOL</td>
+                    <td className="px-4 py-3">
+                      <div className={`text-sm font-satoshi ${pos.pnl >= 0 ? 'text-[#5C8A4A]' : 'text-[#C45A4A]'}`}>
+                        {pos.pnl >= 0 ? '+' : ''}{pos.pnl?.toFixed(3)} SOL
+                        <span className="text-[10px] ml-1 opacity-70">({pos.pnlPercent?.toFixed(1)}%)</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      ) : activeTab === 'liquidity' ? (
+        userLPPositions.length === 0 ? (
+          <div className="bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-2xl p-8 text-center">
+            <div className="text-[#6B7B5E] font-bambino">No liquidity positions</div>
+            <div className="text-[#8B9B7E] text-sm mt-2 font-satoshi">Add liquidity to markets to earn fees</div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {userLPPositions.map((lp) => (
+              <div key={lp.id} className="bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-2xl p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm text-[#3A4A2D] font-bold font-bambino">Market #{lp.marketId.slice(0, 8)}</div>
+                    <div className="text-xs text-[#8B9B7E] font-satoshi mt-1">
+                      {lp.shares?.toFixed(2)} shares
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-[#3A4A2D] font-bambino">{lp.amount?.toFixed(4)} SOL</div>
+                    <div className="text-xs text-[#8B9B7E] font-satoshi">Provided</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div className="bg-[#E8E2D0] border-2 border-[#D4CDB8] rounded-xl p-3 mt-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[#6B7B5E] font-bambino">Total LP Value</span>
+                <span className="text-lg font-bold text-[#3A4A2D] font-bambino">{totalLP.toFixed(4)} SOL</span>
+              </div>
+            </div>
+          </div>
+        )
+      ) : (
+        /* Claimable Tab */
+        <div className="space-y-4">
+          {claimablePositions.length > 0 && (
+            <div>
+              <h3 className="text-sm font-bold text-[#3A4A2D] mb-3 font-bambino">Winning Positions</h3>
+              <div className="space-y-2">
+                {claimablePositions.map((pos) => (
+                  <div key={pos.positionId} className="bg-[#5C8A4A]/10 border-2 border-[#5C8A4A]/30 rounded-2xl p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded-lg text-[10px] uppercase font-bold ${pos.side === 'yes' ? 'bg-[#5C8A4A]/20 text-[#5C8A4A]' : 'bg-[#C45A4A]/20 text-[#C45A4A]'}`}>
+                            {pos.side}
+                          </span>
+                          <span className="text-sm text-[#3A4A2D] font-bambino">Market #{pos.marketId?.slice(0, 8)}</span>
+                        </div>
+                        <div className="text-xs text-[#5C8A4A] font-satoshi mt-1">
+                          +{pos.profit?.toFixed(4)} SOL profit
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-[#5C8A4A] font-bambino">{pos.payoutAmount?.toFixed(4)} SOL</div>
+                          <div className="text-xs text-[#8B9B7E] font-satoshi">Claimable</div>
+                        </div>
+                        <button
+                          onClick={() => handleClaim(pos.positionId, false)}
+                          disabled={claiming === pos.positionId}
+                          className="px-4 py-2 bg-[#5C8A4A] hover:bg-[#4A7A3A] text-white rounded-xl font-bold text-sm font-bambino transition-all disabled:opacity-50"
+                        >
+                          {claiming === pos.positionId ? 'Claiming...' : 'Claim'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {claimableLPPositions.length > 0 && (
+            <div>
+              <h3 className="text-sm font-bold text-[#3A4A2D] mb-3 font-bambino">LP Withdrawals</h3>
+              <div className="space-y-2">
+                {claimableLPPositions.map((lp) => (
+                  <div key={lp.lpPositionId} className="bg-[#D4A060]/10 border-2 border-[#D4A060]/30 rounded-2xl p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-sm text-[#3A4A2D] font-bambino">LP Position #{lp.lpPositionId?.slice(0, 8)}</span>
+                        <div className="text-xs text-[#D4A060] font-satoshi mt-1">
+                          {lp.profit >= 0 ? '+' : ''}{lp.profit?.toFixed(4)} SOL {lp.profit >= 0 ? 'earned' : 'lost'}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-[#D4A060] font-bambino">{lp.payoutAmount?.toFixed(4)} SOL</div>
+                          <div className="text-xs text-[#8B9B7E] font-satoshi">Withdrawable</div>
+                        </div>
+                        <button
+                          onClick={() => handleClaim(lp.lpPositionId, true)}
+                          disabled={claiming === lp.lpPositionId}
+                          className="px-4 py-2 bg-[#D4A060] hover:bg-[#C49050] text-white rounded-xl font-bold text-sm font-bambino transition-all disabled:opacity-50"
+                        >
+                          {claiming === lp.lpPositionId ? 'Withdrawing...' : 'Withdraw'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {claimablePositions.length === 0 && claimableLPPositions.length === 0 && (
+            <div className="bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-2xl p-8 text-center">
+              <div className="text-[#6B7B5E] font-bambino">No claimable positions</div>
+              <div className="text-[#8B9B7E] text-sm mt-2 font-satoshi">Winnings will appear here when markets resolve</div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
 function WalletPanel() {
-  const { balance, walletAddress } = useStore();
+  const { balance, walletAddress, walletAddressFull, walletType, pendingTransactions } = useStore();
+  const [copied, setCopied] = useState(false);
+
+  const copyAddress = () => {
+    if (walletAddressFull) {
+      navigator.clipboard.writeText(walletAddressFull);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   return (
-    <div className="h-full bg-[#050505] p-6">
-      <h2 className="text-xl font-semibold text-white mb-6">Wallet</h2>
+    <div className="h-full bg-[#F5F0E1] p-6 overflow-y-auto">
+      <h2 className="text-xl font-bold text-[#3A4A2D] mb-6 font-bambino">Wallet</h2>
 
-      <div className="grid grid-cols-2 gap-6 mb-8">
-        <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg p-6">
-          <div className="text-[10px] text-[#555] uppercase tracking-wider mb-2">Available Balance</div>
-          <div className="text-3xl font-bold text-white">${balance.toFixed(2)}</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-2xl p-6">
+          <div className="text-[10px] text-[#8B9B7E] uppercase tracking-wider mb-2 font-satoshi">Available Balance</div>
+          <div className="text-3xl font-bold text-[#3A4A2D] font-bambino">
+            {balance.toFixed(4)} {walletType === 'solana' ? 'SOL' : walletType === 'ethereum' ? 'ETH' : ''}
+          </div>
           <div className="flex items-center gap-2 mt-4">
-            <button className="px-4 py-2 bg-[#22c55e] text-white rounded-lg text-sm font-medium hover:bg-[#16a34a]">
+            <button className="px-4 py-2 bg-[#5C8A4A] hover:bg-[#4A7A3A] text-white rounded-xl text-sm font-bold font-bambino transition-all">
               Deposit
             </button>
-            <button className="px-4 py-2 bg-[#0f0f0f] border border-[#1a1a1a] text-white rounded-lg text-sm font-medium hover:bg-[#141414]">
+            <button className="px-4 py-2 bg-[#E8E2D0] border-2 border-[#D4CDB8] hover:border-[#6B7B5E] text-[#5A6A4D] rounded-xl text-sm font-bold font-bambino transition-all">
               Withdraw
             </button>
           </div>
         </div>
 
-        <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg p-6">
-          <div className="text-[10px] text-[#555] uppercase tracking-wider mb-2">Wallet Address</div>
-          <div className="font-mono text-white break-all">{walletAddress}</div>
-          <button className="mt-4 text-sm text-[#22c55e] hover:underline">Copy Address</button>
+        <div className="bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-2xl p-6">
+          <div className="text-[10px] text-[#8B9B7E] uppercase tracking-wider mb-2 font-satoshi">Wallet Address</div>
+          <div className="font-mono text-sm text-[#3A4A2D] break-all">{walletAddressFull || walletAddress || 'Not connected'}</div>
+          <button
+            onClick={copyAddress}
+            className="mt-4 text-sm text-[#5C8A4A] hover:text-[#4A7A3A] font-bambino transition-colors"
+          >
+            {copied ? '✓ Copied!' : 'Copy Address'}
+          </button>
         </div>
       </div>
 
-      <h3 className="text-lg font-medium text-white mb-4">Recent Transactions</h3>
-      <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg p-4">
-        <div className="text-center text-[#555] py-8">No recent transactions</div>
+      <h3 className="text-lg font-bold text-[#3A4A2D] mb-4 font-bambino">Recent Transactions</h3>
+      <div className="bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-2xl p-4">
+        {pendingTransactions.length === 0 ? (
+          <div className="text-center text-[#8B9B7E] py-8 font-bambino">No recent transactions</div>
+        ) : (
+          <div className="space-y-2">
+            {pendingTransactions.map((tx) => (
+              <div key={tx.id} className={`flex items-center justify-between p-3 rounded-xl border-2 ${
+                tx.status === 'confirmed' ? 'bg-[#5C8A4A]/10 border-[#5C8A4A]/30' :
+                tx.status === 'failed' ? 'bg-[#C45A4A]/10 border-[#C45A4A]/30' :
+                'bg-[#D4A060]/10 border-[#D4A060]/30'
+              }`}>
+                <div>
+                  <div className="text-sm text-[#3A4A2D] font-bambino capitalize">{tx.type.replace('_', ' ')}</div>
+                  <div className="text-xs text-[#8B9B7E] font-satoshi">{tx.amount.toFixed(4)} SOL</div>
+                </div>
+                <span className={`px-2 py-0.5 rounded-lg text-xs font-bold ${
+                  tx.status === 'confirmed' ? 'bg-[#5C8A4A]/20 text-[#5C8A4A]' :
+                  tx.status === 'failed' ? 'bg-[#C45A4A]/20 text-[#C45A4A]' :
+                  'bg-[#D4A060]/20 text-[#D4A060]'
+                }`}>
+                  {tx.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -485,47 +875,47 @@ function WalletPanel() {
 
 function AlertsPanel() {
   return (
-    <div className="h-full bg-[#050505] p-6">
-      <h2 className="text-xl font-semibold text-white mb-6">Alerts</h2>
+    <div className="h-full bg-[#F5F0E1] p-6 overflow-y-auto">
+      <h2 className="text-xl font-bold text-[#3A4A2D] mb-6 font-bambino">Alerts</h2>
 
-      <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg p-6 mb-6">
-        <h3 className="text-sm font-medium text-white mb-4">Create New Alert</h3>
+      <div className="bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-2xl p-6 mb-6">
+        <h3 className="text-sm font-bold text-[#3A4A2D] mb-4 font-bambino">Create New Alert</h3>
         <div className="space-y-4">
           <div>
-            <label className="text-[10px] text-[#555] uppercase tracking-wider block mb-2">Market</label>
+            <label className="text-[10px] text-[#8B9B7E] uppercase tracking-wider block mb-2 font-satoshi">Market</label>
             <input
               type="text"
               placeholder="Search markets..."
-              className="w-full bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg px-4 py-2 text-white placeholder:text-[#444] focus:outline-none focus:border-[#242424]"
+              className="w-full bg-[#F5F0E1] border-2 border-[#D4CDB8] rounded-xl px-4 py-2 text-[#3A4A2D] placeholder:text-[#8B9B7E] focus:outline-none focus:border-[#6B7B5E] font-satoshi"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-[10px] text-[#555] uppercase tracking-wider block mb-2">Condition</label>
-              <select className="w-full bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg px-4 py-2 text-white focus:outline-none">
+              <label className="text-[10px] text-[#8B9B7E] uppercase tracking-wider block mb-2 font-satoshi">Condition</label>
+              <select className="w-full bg-[#F5F0E1] border-2 border-[#D4CDB8] rounded-xl px-4 py-2 text-[#3A4A2D] focus:outline-none focus:border-[#6B7B5E] font-satoshi">
                 <option>Price above</option>
                 <option>Price below</option>
                 <option>Volume spike</option>
               </select>
             </div>
             <div>
-              <label className="text-[10px] text-[#555] uppercase tracking-wider block mb-2">Value</label>
+              <label className="text-[10px] text-[#8B9B7E] uppercase tracking-wider block mb-2 font-satoshi">Value</label>
               <input
                 type="number"
                 placeholder="50"
-                className="w-full bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg px-4 py-2 text-white placeholder:text-[#444] focus:outline-none"
+                className="w-full bg-[#F5F0E1] border-2 border-[#D4CDB8] rounded-xl px-4 py-2 text-[#3A4A2D] placeholder:text-[#8B9B7E] focus:outline-none focus:border-[#6B7B5E] font-satoshi"
               />
             </div>
           </div>
-          <button className="px-4 py-2 bg-[#22c55e] text-white rounded-lg text-sm font-medium hover:bg-[#16a34a]">
+          <button className="px-4 py-2 bg-[#5C8A4A] hover:bg-[#4A7A3A] text-white rounded-xl text-sm font-bold font-bambino transition-all">
             Create Alert
           </button>
         </div>
       </div>
 
-      <h3 className="text-lg font-medium text-white mb-4">Active Alerts</h3>
-      <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg p-4">
-        <div className="text-center text-[#555] py-8">No active alerts</div>
+      <h3 className="text-lg font-bold text-[#3A4A2D] mb-4 font-bambino">Active Alerts</h3>
+      <div className="bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-2xl p-4">
+        <div className="text-center text-[#8B9B7E] py-8 font-bambino">No active alerts</div>
       </div>
     </div>
   );
@@ -539,27 +929,27 @@ function BondsPanel() {
   ];
 
   return (
-    <div className="h-full bg-[#050505] p-6">
-      <h2 className="text-xl font-semibold text-white mb-2">Bonds</h2>
-      <p className="text-[#555] mb-6">Near-certain outcomes with predictable payouts</p>
+    <div className="h-full bg-[#F5F0E1] p-6 overflow-y-auto">
+      <h2 className="text-xl font-bold text-[#3A4A2D] mb-2 font-bambino">Bonds</h2>
+      <p className="text-[#8B9B7E] mb-6 font-satoshi">Near-certain outcomes with predictable payouts</p>
 
-      <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg overflow-hidden">
+      <div className="bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[#1a1a1a]">
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">Market</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">Probability</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">Expected Payout</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#555] font-medium uppercase tracking-wider">Liquidity</th>
+            <tr className="border-b-2 border-[#D4CDB8] bg-[#E8E2D0]">
+              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Market</th>
+              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Probability</th>
+              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Expected Payout</th>
+              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Liquidity</th>
             </tr>
           </thead>
           <tbody>
             {bonds.map((bond, idx) => (
-              <tr key={idx} className="border-b border-[#1a1a1a] last:border-0 hover:bg-[#0f0f0f] cursor-pointer">
-                <td className="px-4 py-3 text-sm text-white">{bond.market}</td>
-                <td className="px-4 py-3 text-sm text-[#22c55e]">{bond.probability}%</td>
-                <td className="px-4 py-3 text-sm text-[#666]">{bond.payout}</td>
-                <td className="px-4 py-3 text-sm text-[#666]">{bond.liquidity}</td>
+              <tr key={idx} className="border-b border-[#D4CDB8] last:border-0 hover:bg-[#E8E2D0] cursor-pointer transition-colors">
+                <td className="px-4 py-3 text-sm text-[#3A4A2D] font-bambino">{bond.market}</td>
+                <td className="px-4 py-3 text-sm text-[#5C8A4A] font-bold font-satoshi">{bond.probability}%</td>
+                <td className="px-4 py-3 text-sm text-[#5A6A4D] font-satoshi">{bond.payout}</td>
+                <td className="px-4 py-3 text-sm text-[#5A6A4D] font-satoshi">{bond.liquidity}</td>
               </tr>
             ))}
           </tbody>
@@ -579,20 +969,20 @@ function CalendarPanel() {
   ];
 
   return (
-    <div className="h-full bg-[#050505] p-6">
-      <h2 className="text-xl font-semibold text-white mb-2">Calendar</h2>
-      <p className="text-[#555] mb-6">Upcoming market resolutions</p>
+    <div className="h-full bg-[#F5F0E1] p-6 overflow-y-auto">
+      <h2 className="text-xl font-bold text-[#3A4A2D] mb-2 font-bambino">Calendar</h2>
+      <p className="text-[#8B9B7E] mb-6 font-satoshi">Upcoming market resolutions</p>
 
       <div className="space-y-3">
         {events.map((event, idx) => (
-          <div key={idx} className="flex items-center gap-4 p-4 bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg hover:border-[#242424] cursor-pointer transition-colors">
-            <div className="w-16 text-center">
-              <div className="text-[10px] text-[#555] uppercase">{event.date.split(' ')[0]}</div>
-              <div className="text-2xl font-bold text-white">{event.date.split(' ')[1]}</div>
+          <div key={idx} className="flex items-center gap-4 p-4 bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-2xl hover:border-[#6B7B5E] cursor-pointer transition-colors">
+            <div className="w-16 text-center bg-[#6B7B5E] rounded-xl py-2">
+              <div className="text-[10px] text-[#E4D4B8] uppercase font-satoshi">{event.date.split(' ')[0]}</div>
+              <div className="text-2xl font-bold text-white font-bambino">{event.date.split(' ')[1]}</div>
             </div>
             <div className="flex-1">
-              <h3 className="text-sm font-medium text-white">{event.market}</h3>
-              <p className="text-[10px] text-[#555]">{event.time}</p>
+              <h3 className="text-sm font-bold text-[#3A4A2D] font-bambino">{event.market}</h3>
+              <p className="text-[10px] text-[#8B9B7E] font-satoshi">{event.time}</p>
             </div>
           </div>
         ))}

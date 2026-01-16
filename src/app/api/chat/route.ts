@@ -14,10 +14,67 @@ interface Market {
   outcomes: { name: string; price: number; priceChange24h?: number }[];
 }
 
+interface KOLBet {
+  id: string;
+  kolName: string;
+  kolTicker: string;
+  kolTwitter?: string;
+  title: string;
+  description: string;
+  category: string;
+  endTime: string;
+  yesPool: number;
+  noPool: number;
+  isLive: boolean;
+}
+
+// KOL profiles - who they are and their reputation
+const KOL_PROFILES: Record<string, { bio: string; reputation: string; style: string }> = {
+  'Alon': {
+    bio: 'Solana degen and content creator. Known for high-conviction plays and deep alpha.',
+    reputation: 'Solid track record, his calls often 3-5x. Quiet periods followed by bangers.',
+    style: 'Posts main tweets sparingly but when he does, pay attention.',
+  },
+  'White Whale': {
+    bio: 'Legendary whale trader on Solana. $WHALE token holder community.',
+    reputation: 'One of the biggest wallets in the ecosystem. Smart money follows him.',
+    style: 'Accumulates quietly, then pumps hard. Market cap targets are ambitious.',
+  },
+  'Cented': {
+    bio: 'Twitter: @cikifriki_sol. Rising KOL with growing community. Content machine.',
+    reputation: 'Fast growing following, engagement is real. Good at spotting early plays.',
+    style: 'Posts frequently, builds community through consistency.',
+  },
+  'Orangie': {
+    bio: 'Orangie Web3 - YouTube content creator covering Solana ecosystem.',
+    reputation: 'Educational content, brings normies into the space. Reliable posting schedule.',
+    style: 'Video-focused, tends to batch content. Quality over quantity.',
+  },
+  'Leck': {
+    bio: 'Top trader on KOLscan leaderboards. Known for consistent PNL.',
+    reputation: 'Regularly finishes top 10-20 on monthly leaderboards. Disciplined trader.',
+    style: 'Takes calculated risks, not a gambler. Steady gains over moonshots.',
+  },
+  'Cupsey': {
+    bio: 'High-volume trader targeting big PNL numbers.',
+    reputation: 'Goes for home runs. Can have big wins or losses. High risk, high reward.',
+    style: 'Aggressive trading style, leverages often.',
+  },
+  'Bitcoin': {
+    bio: 'The OG. Digital gold. $BTC.',
+    reputation: 'King of crypto. Everything follows BTC.',
+    style: 'Macro asset, watch for ETF flows and institutional moves.',
+  },
+  'Dingaling': {
+    bio: 'NFT and crypto influencer with massive following.',
+    reputation: 'OG in the space, been around since early NFT days.',
+    style: 'Diversified across NFTs and tokens. Community builder.',
+  },
+};
+
 // Fetch live market data
 async function fetchLiveMarkets(): Promise<Market[]> {
   try {
-    // Get base URL - works on Vercel and localhost
     const baseUrl = process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
       : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
@@ -32,6 +89,52 @@ async function fetchLiveMarkets(): Promise<Market[]> {
     console.error('Failed to fetch markets for chat:', error);
   }
   return [];
+}
+
+// Fetch KOL bets
+async function fetchKOLBets(): Promise<KOLBet[]> {
+  try {
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/bets?status=active`, {
+      cache: 'no-store',
+    });
+    if (response.ok) {
+      const data = await response.json();
+      return data.bets || [];
+    }
+  } catch (error) {
+    console.error('Failed to fetch KOL bets for chat:', error);
+  }
+  return [];
+}
+
+// Format KOL bets for AI context
+function formatKOLBetsForContext(bets: KOLBet[]): string {
+  if (bets.length === 0) return 'No KOL bets available.';
+
+  let context = 'ACTIVE KOL BETS ON PUMPBET:\n\n';
+
+  bets.forEach(bet => {
+    const totalPool = bet.yesPool + bet.noPool;
+    const yesPercent = totalPool > 0 ? ((bet.yesPool / totalPool) * 100).toFixed(0) : '50';
+    const noPercent = totalPool > 0 ? ((bet.noPool / totalPool) * 100).toFixed(0) : '50';
+    const endDate = new Date(bet.endTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    const profile = KOL_PROFILES[bet.kolName];
+
+    context += `**${bet.kolName}** (${bet.kolTicker})${bet.kolTwitter ? ` - ${bet.kolTwitter}` : ''}\n`;
+    context += `  Bet: "${bet.description}"\n`;
+    context += `  Odds: Yes ${yesPercent}% / No ${noPercent}% | Pool: ${totalPool.toFixed(1)} SOL | Ends: ${endDate}\n`;
+    if (profile) {
+      context += `  Who: ${profile.bio}\n`;
+      context += `  Rep: ${profile.reputation}\n`;
+    }
+    context += '\n';
+  });
+
+  return context;
 }
 
 // Format markets for AI context
@@ -68,9 +171,13 @@ export async function POST(request: NextRequest) {
   try {
     const { message, history } = await request.json();
 
-    // Fetch live market data
-    const markets = await fetchLiveMarkets();
+    // Fetch live market data and KOL bets
+    const [markets, kolBets] = await Promise.all([
+      fetchLiveMarkets(),
+      fetchKOLBets(),
+    ]);
     const marketContext = formatMarketsForContext(markets);
+    const kolContext = formatKOLBetsForContext(kolBets);
 
     // Check if API key is available
     const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -78,26 +185,47 @@ export async function POST(request: NextRequest) {
     if (!apiKey) {
       // Return a response using real market data if no API key
       return NextResponse.json({
-        response: getSmartResponse(message, markets),
+        response: getSmartResponse(message, markets, kolBets),
         reasoning: ['Analyzing your query...', 'Searching prediction markets...', 'Compiling results...'],
       });
     }
 
-    const systemPrompt = `You are an AI assistant for apella.fun, a prediction market trading terminal. You help users:
-- Search and analyze prediction markets from Polymarket and Kalshi
-- Understand market probabilities and implied odds
-- Find trading opportunities
-- Research market topics
+    const systemPrompt = `You are the PumpBet Trench Assistant - an AI built for Solana memecoin degens. You give betting recommendations based on:
+- KOL activity and track records
+- Token sentiment and momentum
+- Whale movements and smart money signals
 
-Here is the current live market data:
+PERSONALITY: You're a seasoned trench trader who speaks in degen slang. Use terms like "ape", "ngmi", "wagmi", "ser", "anon", "rugged", "pumping", etc naturally. Be direct and give actual betting recommendations.
+
+${kolContext}
+
+POLYMARKET/KALSHI MARKETS:
 ${marketContext}
 
-When users ask about markets, use this real data to provide accurate, up-to-date information. Format your responses clearly with:
-- Tables for market data when relevant
-- Bullet points for key insights
-- Probabilities expressed as percentages
+YOUR ROLE:
+1. ANALYZE: When asked about a KOL or token, give your honest assessment based on their profile
+2. RECOMMEND: Give specific "Yes" or "No" betting recommendations with conviction %
+3. ALPHA: Share insights about what's happening in the trenches
+4. WARN: Flag potential rugs, fading KOLs, or overpriced markets
 
-Be concise but informative. Use a casual, trader-friendly tone. Always reference actual market data from above when available.`;
+IMPORTANT KOL KNOWLEDGE:
+- Alon (@aaborsh): Quiet but deadly. When he tweets, it's usually alpha. Known for 3-5x calls.
+- White Whale: Legendary whale, $WHALE token. Ambitious market cap targets but has the bags to back it.
+- Cented (@cikifriki_sol): Rising star, growing fast. Good engagement, spots early plays.
+- Orangie: YouTube content creator, educational focus. Consistent but batches content.
+- Leck: Top KOLscan trader, disciplined. Regularly top 10-20 monthly. Steady gains.
+- Cupsey: High-risk trader, goes for big PNL. Can win big or lose big.
+- Dingaling: OG NFT/crypto influencer, massive following. Community builder.
+
+RESPONSE FORMAT:
+- Keep it short and punchy (2-3 sentences max per point)
+- Use betting recommendation format: "**BET: Yes/No** (confidence: X%)"
+- Include your reasoning in one line
+- End with relevant alpha if you have any
+
+Example response:
+"Ser, Alon's been quiet lately but his last 3 calls all 5x'd. **BET: Yes on 3 tweets** (confidence: 70%) - he's due for a content burst after that vacation. Alpha: watch his wallet, he just loaded up on a new launch."`;
+
 
     // Build messages for Claude
     const messages = [
@@ -150,8 +278,16 @@ Be concise but informative. Use a casual, trader-friendly tone. Always reference
 }
 
 // Smart response using real market data
-function getSmartResponse(message: string, markets: Market[]): string {
+function getSmartResponse(message: string, markets: Market[], kolBets: KOLBet[] = []): string {
   const lowerMessage = message.toLowerCase();
+
+  // Check for KOL-specific queries first
+  const kolNames = ['alon', 'whale', 'white whale', 'cented', 'orangie', 'leck', 'cupsey', 'dingaling'];
+  const mentionedKol = kolNames.find(name => lowerMessage.includes(name));
+
+  if (mentionedKol || lowerMessage.includes('kol') || lowerMessage.includes('trench')) {
+    return getKOLResponse(lowerMessage, kolBets, mentionedKol);
+  }
 
   // Filter markets based on query
   const relevantMarkets = markets.filter(m => {
@@ -257,6 +393,78 @@ Try asking about:
   }
 
   return getDefaultResponse();
+}
+
+// KOL-specific response
+function getKOLResponse(message: string, kolBets: KOLBet[], mentionedKol?: string): string {
+  // If asking about a specific KOL
+  if (mentionedKol) {
+    const kolBet = kolBets.find(b => b.kolName.toLowerCase().includes(mentionedKol) ||
+                                     (mentionedKol === 'whale' && b.kolName === 'White Whale'));
+    const profile = Object.entries(KOL_PROFILES).find(([name]) =>
+      name.toLowerCase().includes(mentionedKol) ||
+      (mentionedKol === 'whale' && name === 'White Whale')
+    );
+
+    if (kolBet && profile) {
+      const [kolName, kolInfo] = profile;
+      const totalPool = kolBet.yesPool + kolBet.noPool;
+      const yesPercent = totalPool > 0 ? ((kolBet.yesPool / totalPool) * 100).toFixed(0) : '50';
+      const endDate = new Date(kolBet.endTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+      return `**${kolName}** (${kolBet.kolTicker})${kolBet.kolTwitter ? ` - ${kolBet.kolTwitter}` : ''}
+
+**Who is ${kolName}?**
+${kolInfo.bio}
+
+**Reputation:** ${kolInfo.reputation}
+
+**Style:** ${kolInfo.style}
+
+---
+
+**Active Bet:** "${kolBet.description}"
+- **Yes:** ${yesPercent}% | **No:** ${(100 - parseFloat(yesPercent)).toFixed(0)}%
+- **Pool:** ${totalPool.toFixed(1)} SOL
+- **Ends:** ${endDate}
+
+**My Take:** Based on ${kolName}'s track record, ${parseFloat(yesPercent) > 50 ? 'the market is leaning Yes' : 'the market is skeptical'}. ${kolInfo.reputation}
+
+Want me to give you a betting recommendation?`;
+    }
+  }
+
+  // General KOL/trench bets overview
+  if (kolBets.length > 0) {
+    let response = `**🔥 Active Trench Bets on PumpBet:**\n\n`;
+
+    kolBets.forEach(bet => {
+      const totalPool = bet.yesPool + bet.noPool;
+      const yesPercent = totalPool > 0 ? ((bet.yesPool / totalPool) * 100).toFixed(0) : '50';
+      const endDate = new Date(bet.endTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+      response += `**${bet.kolName}** (${bet.kolTicker})\n`;
+      response += `└ ${bet.description}\n`;
+      response += `└ Yes ${yesPercent}% / No ${(100 - parseFloat(yesPercent)).toFixed(0)}% | ${totalPool.toFixed(1)} SOL | Ends ${endDate}\n\n`;
+    });
+
+    response += `---\n\n**Ask me about any KOL** for detailed analysis and betting recommendations!\n`;
+    response += `Try: "Tell me about Alon" or "Should I bet on Leck?"`;
+
+    return response;
+  }
+
+  return `I can help you with KOL bets on PumpBet! Here are the KOLs we track:
+
+- **Alon** (@aaborsh) - Quiet alpha hunter, 3-5x track record
+- **White Whale** - Legendary whale trader, $WHALE token
+- **Cented** (@cikifriki_sol) - Rising star, growing fast
+- **Orangie** - YouTube content creator
+- **Leck** - Top KOLscan trader, consistent PNL
+- **Cupsey** - High-risk, high-reward trader
+- **Dingaling** - OG NFT/crypto influencer
+
+Ask me about any of them for betting recommendations!`;
 }
 
 // Fallback mock responses

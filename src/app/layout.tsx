@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import "./globals.css";
 
+const TransactionToast = dynamic(
+  () => import("@/components/ui/TransactionToast"),
+  { ssr: false }
+);
+
 export const metadata: Metadata = {
-  title: "Terminal - Prediction Market OS",
-  description: "Trade every platform. Research faster. Move first.",
+  title: "pumpbet.fun - bet on the trenches",
+  description: "The first prediction market for crypto KOLs. Bet on who makes it and who fades.",
 };
 
 export default function RootLayout({
@@ -13,7 +19,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {children}
+        <TransactionToast />
+      </body>
     </html>
   );
 }

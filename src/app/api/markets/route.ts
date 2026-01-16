@@ -207,61 +207,78 @@ function getMockKalshiMarkets(): any[] {
   }));
 }
 
-// Fetch Kalshi markets with pagination (filtering out MVE parlays)
+// Fetch Kalshi markets by getting events first, then their markets
 async function fetchKalshiMarkets(): Promise<{ markets: KalshiMarket[], eventMap: Map<string, KalshiEvent> }> {
   const allMarkets: KalshiMarket[] = [];
-  let cursor: string | null = null;
-  let attempts = 0;
-  const maxAttempts = 10;
-
-  // Fetch events in parallel for better titles
-  const eventMapPromise = fetchKalshiEvents();
+  const eventMap = new Map<string, KalshiEvent>();
 
   try {
-    while (attempts < maxAttempts) {
-      const params = new URLSearchParams();
-      params.append('limit', '200');
-      params.append('status', 'open');
-      if (cursor) params.append('cursor', cursor);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-      const response = await fetch(
-        `${KALSHI_API}/markets?${params.toString()}`,
-        {
-          signal: controller.signal,
-          headers: {
-            'Accept': 'application/json',
-          },
-        }
-      );
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        console.error('Kalshi API error:', response.status);
-        break;
+    // First fetch events
+    const eventsResponse = await fetch(
+      `${KALSHI_API}/events?limit=50&status=open`,
+      {
+        signal: controller.signal,
+        headers: { 'Accept': 'application/json' },
       }
+    );
 
-      const data = await response.json();
-      if (data.markets && data.markets.length > 0) {
-        // Filter out MVE parlay markets - they have concatenated titles
-        const nonParlayMarkets = data.markets.filter((m: any) => !m.mve_collection_ticker);
-        allMarkets.push(...nonParlayMarkets);
-        cursor = data.cursor;
-        attempts++;
+    clearTimeout(timeoutId);
 
-        if (!cursor) break;
-      } else {
-        break;
-      }
+    if (!eventsResponse.ok) {
+      console.error('Kalshi events API error:', eventsResponse.status);
+      return { markets: [], eventMap };
     }
+
+    const eventsData = await eventsResponse.json();
+    const events = eventsData.events || [];
+
+    // Store events in map
+    events.forEach((e: KalshiEvent) => {
+      eventMap.set(e.event_ticker, e);
+    });
+
+    // Fetch markets for top 10 events only (to stay within timeout)
+    const topEvents = events.slice(0, 10);
+    const marketPromises = topEvents.map(async (event: KalshiEvent) => {
+      try {
+        const ctrl = new AbortController();
+        const tid = setTimeout(() => ctrl.abort(), 2000);
+
+        const response = await fetch(
+          `${KALSHI_API}/markets?event_ticker=${event.event_ticker}&limit=3`,
+          {
+            signal: ctrl.signal,
+            headers: { 'Accept': 'application/json' },
+          }
+        );
+
+        clearTimeout(tid);
+
+        if (response.ok) {
+          const data = await response.json();
+          // Filter out parlay markets
+          return (data.markets || []).filter((m: any) => !m.mve_collection_ticker);
+        }
+      } catch (e) {
+        // Ignore individual event fetch errors
+      }
+      return [];
+    });
+
+    const marketResults = await Promise.all(marketPromises);
+    marketResults.forEach(markets => {
+      allMarkets.push(...markets);
+    });
+
+    console.log(`Fetched ${events.length} Kalshi events, ${allMarkets.length} live markets`);
+
   } catch (error) {
     console.error('Error fetching Kalshi markets:', error);
   }
 
-  const eventMap = await eventMapPromise;
   return { markets: allMarkets, eventMap };
 }
 
@@ -469,9 +486,27 @@ export async function GET(request: Request) {
 
   } catch (error) {
     console.error('Error fetching markets:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch markets', markets: [], total: 0, polymarketCount: 0, kalshiCount: 0 },
-      { status: 500 }
-    );
+    // Return mock data on error so the UI still works
+    const mockPoly = getMockPolymarketMarkets();
+    const mockKalshi = getMockKalshiMarkets();
+    let fallbackMarkets = [...mockPoly, ...mockKalshi];
+
+    if (category && category !== 'all') {
+      fallbackMarkets = fallbackMarkets.filter(m => m.category === category);
+    }
+    if (search) {
+      const query = search.toLowerCase();
+      fallbackMarkets = fallbackMarkets.filter(m =>
+        m.title.toLowerCase().includes(query)
+      );
+    }
+    fallbackMarkets.sort((a, b) => (b.volume || 0) - (a.volume || 0));
+
+    return NextResponse.json({
+      markets: fallbackMarkets,
+      total: fallbackMarkets.length,
+      polymarketCount: mockPoly.length,
+      kalshiCount: mockKalshi.length,
+    });
   }
 }
