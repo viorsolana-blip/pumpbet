@@ -46,8 +46,8 @@ export function XLogo({ className = "w-5 h-5" }: { className?: string }) {
   );
 }
 
-// Apella Logo - Custom brand mark
-export function ApellaLogo({ className = "w-6 h-6" }: { className?: string }) {
+// PumpBet Logo - Custom brand mark
+export function PumpBetLogo({ className = "w-6 h-6" }: { className?: string }) {
   return (
     <svg
       className={className}
