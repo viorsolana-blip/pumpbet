@@ -488,6 +488,20 @@ body {
   animation: bounce-playful 3s ease-in-out infinite;
 }
 
+/* Flywheel bounce animation */
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
 /* Helmet wobble */
 .helmet-wobble:hover {
   animation: wiggle 0.3s ease-in-out;
