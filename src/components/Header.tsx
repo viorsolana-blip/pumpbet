@@ -63,9 +63,8 @@ export function Header() {
         setWalletType('solana');
 
         const rpcEndpoints = [
-          'https://api.mainnet-beta.solana.com',
-          'https://solana-mainnet.g.alchemy.com/v2/demo',
-          'https://rpc.ankr.com/solana',
+          process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com',
+          'https://api.devnet.solana.com',
         ];
 
         let balanceFetched = false;
