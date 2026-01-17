@@ -346,7 +346,15 @@ function convertPolymarketEvent(event: PolymarketEvent): any | null {
     prices = ['0.5', '0.5'];
   }
 
-  const outcomes = (market.outcomes || ['Yes', 'No']).map((name: string, i: number) => ({
+  // Ensure outcomes is an array (API sometimes returns a string)
+  let outcomeNames = ['Yes', 'No'];
+  if (Array.isArray(market.outcomes)) {
+    outcomeNames = market.outcomes;
+  } else if (typeof market.outcomes === 'string') {
+    outcomeNames = market.outcomes.split(',').map((s: string) => s.trim());
+  }
+
+  const outcomes = outcomeNames.map((name: string, i: number) => ({
     id: `${market.id || event.id}-${i}`,
     name,
     price: parseFloat(prices[i] || '0.5') * 100,
