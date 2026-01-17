@@ -8,20 +8,20 @@ const TransactionToast = dynamic(
 );
 
 export const metadata: Metadata = {
-  title: "Apella - Prediction Markets on Solana",
+  title: "PumpBet - Prediction Markets on Solana",
   description: "Trade on real-world events with SOL. Polymarket and Kalshi markets, powered by Solana.",
-  keywords: ["prediction market", "solana", "crypto", "betting", "polymarket", "kalshi"],
-  authors: [{ name: "Apella" }],
+  keywords: ["prediction market", "solana", "crypto", "betting", "polymarket", "kalshi", "pumpbet"],
+  authors: [{ name: "PumpBet" }],
   openGraph: {
-    title: "Apella - Prediction Markets on Solana",
+    title: "PumpBet - Prediction Markets on Solana",
     description: "Trade on real-world events with SOL. Polymarket and Kalshi markets, powered by Solana.",
-    url: "https://apella.fun",
-    siteName: "Apella",
+    url: "https://pumpbet.fun",
+    siteName: "PumpBet",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Apella - Prediction Markets on Solana",
+    title: "PumpBet - Prediction Markets on Solana",
     description: "Trade on real-world events with SOL.",
   },
   robots: {
