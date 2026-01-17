@@ -134,11 +134,12 @@ export default function FlywheelPage() {
             <div className="flex justify-center mb-8">
               <div className="animate-bounce-slow">
                 <Image
-                  src="/brand/flywheel.png"
+                  src="/brand/flywheel.png?v=2"
                   alt="Flywheel"
                   width={160}
                   height={160}
                   className="drop-shadow-lg"
+                  unoptimized
                 />
               </div>
             </div>
