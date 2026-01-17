@@ -4,7 +4,7 @@ import { FC, ReactNode, useMemo, useEffect } from 'react';
 import { ConnectionProvider, WalletProvider as SolanaWalletProvider, useWallet } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
-import { clusterApiUrl, Connection } from '@solana/web3.js';
+import { Connection } from '@solana/web3.js';
 import { useStore } from '@/store';
 
 // Import wallet adapter styles
@@ -27,7 +27,7 @@ function WalletStateSync({ children }: { children: ReactNode }) {
       // Fetch real balance
       const fetchBalance = async () => {
         try {
-          const rpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || clusterApiUrl('devnet');
+          const rpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
           console.log('Fetching balance from:', rpcUrl, 'for wallet:', publicKey.toBase58());
           const connection = new Connection(rpcUrl, 'confirmed');
           const balance = await connection.getBalance(publicKey);
@@ -62,7 +62,9 @@ interface Props {
 
 export const WalletProvider: FC<Props> = ({ children }) => {
   // Use devnet for testing, switch to mainnet-beta for production
-  const endpoint = useMemo(() => clusterApiUrl('devnet'), []);
+  const endpoint = useMemo(() => {
+    return process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
+  }, []);
 
   // Configure wallets
   const wallets = useMemo(
