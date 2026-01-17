@@ -346,12 +346,21 @@ function convertPolymarketEvent(event: PolymarketEvent): any | null {
     prices = ['0.5', '0.5'];
   }
 
-  // Ensure outcomes is an array (API sometimes returns a string)
+  // Ensure outcomes is an array (API sometimes returns a JSON string)
   let outcomeNames = ['Yes', 'No'];
   if (Array.isArray(market.outcomes)) {
     outcomeNames = market.outcomes;
   } else if (typeof market.outcomes === 'string') {
-    outcomeNames = market.outcomes.split(',').map((s: string) => s.trim());
+    // Try parsing as JSON first (e.g., '["Yes", "No"]')
+    try {
+      const parsed = JSON.parse(market.outcomes);
+      if (Array.isArray(parsed)) {
+        outcomeNames = parsed;
+      }
+    } catch {
+      // Fall back to comma split
+      outcomeNames = market.outcomes.split(',').map((s: string) => s.trim());
+    }
   }
 
   const outcomes = outcomeNames.map((name: string, i: number) => ({
