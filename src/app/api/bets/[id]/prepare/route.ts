@@ -51,38 +51,47 @@ export async function POST(
       );
     }
 
-    // Get bet/market
-    let bet;
+    // Get bet/market - try multiple sources
+    let bet = null;
+    let yesPool = 50;
+    let noPool = 50;
+
+    // Try Supabase first if configured
     if (isSupabaseConfigured()) {
-      bet = await getMarketById(betId);
-    } else {
+      try {
+        bet = await getMarketById(betId);
+      } catch (e) {
+        console.log('Supabase not available, trying in-memory db');
+      }
+    }
+
+    // Fallback to in-memory db
+    if (!bet) {
       bet = await getBetById(betId);
     }
 
-    if (!bet) {
-      return NextResponse.json(
-        { success: false, error: 'Bet not found' },
-        { status: 404 }
-      );
-    }
+    // If found in our databases, validate it
+    if (bet) {
+      const status = 'status' in bet ? bet.status : (bet as any).status;
+      if (status !== 'active') {
+        return NextResponse.json(
+          { success: false, error: 'Bet is not active' },
+          { status: 400 }
+        );
+      }
 
-    // Check if bet is active
-    const status = 'status' in bet ? bet.status : (bet as any).status;
-    if (status !== 'active') {
-      return NextResponse.json(
-        { success: false, error: 'Bet is not active' },
-        { status: 400 }
-      );
-    }
+      const endTime = 'end_time' in bet ? new Date(bet.end_time) : (bet as any).endTime;
+      if (endTime < new Date()) {
+        return NextResponse.json(
+          { success: false, error: 'Bet has ended' },
+          { status: 400 }
+        );
+      }
 
-    // Check if bet has ended
-    const endTime = 'end_time' in bet ? new Date(bet.end_time) : (bet as any).endTime;
-    if (endTime < new Date()) {
-      return NextResponse.json(
-        { success: false, error: 'Bet has ended' },
-        { status: 400 }
-      );
+      yesPool = 'yes_pool' in bet ? bet.yes_pool : (bet as any).yesPool || 50;
+      noPool = 'no_pool' in bet ? bet.no_pool : (bet as any).noPool || 50;
     }
+    // For external markets (polymarket, kalshi), allow betting without local record
 
     // Create unsigned transaction
     const userPubkey = new PublicKey(walletAddress);
@@ -96,8 +105,6 @@ export async function POST(
     }
 
     // Calculate expected shares (for display)
-    const yesPool = 'yes_pool' in bet ? bet.yes_pool : (bet as any).yesPool;
-    const noPool = 'no_pool' in bet ? bet.no_pool : (bet as any).noPool;
     const totalPool = yesPool + noPool;
     const price = side === 'yes'
       ? totalPool > 0 ? (yesPool / totalPool) * 100 : 50

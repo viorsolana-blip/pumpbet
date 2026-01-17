@@ -111,9 +111,12 @@ export const supabaseAdmin = supabaseUrl && supabaseServiceKey
   ? createClient(supabaseUrl, supabaseServiceKey)
   : null;
 
-// Check if Supabase is configured
+// Check if Supabase is configured with valid JWT keys
 export const isSupabaseConfigured = (): boolean => {
-  return !!(supabaseUrl && supabaseAnonKey);
+  // Keys must exist and be valid JWTs (start with eyJ)
+  const hasValidUrl = !!supabaseUrl && supabaseUrl.includes('supabase.co');
+  const hasValidAnonKey = !!supabaseAnonKey && supabaseAnonKey.startsWith('eyJ');
+  return hasValidUrl && hasValidAnonKey;
 };
 
 // Helper to get the appropriate client
