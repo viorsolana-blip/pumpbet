@@ -5,10 +5,28 @@ export const NETWORK: Cluster = (process.env.NEXT_PUBLIC_SOLANA_NETWORK as Clust
 
 export const RPC_URL = process.env.SOLANA_RPC_URL || clusterApiUrl(NETWORK);
 
-// Treasury wallet configuration
-export const TREASURY_PUBLIC_KEY = process.env.TREASURY_PUBLIC_KEY
-  ? new PublicKey(process.env.TREASURY_PUBLIC_KEY)
-  : null;
+// Treasury wallet configuration (lazy-loaded to avoid build-time errors)
+let _treasuryPublicKey: PublicKey | null = null;
+let _treasuryKeyLoaded = false;
+
+export function getTreasuryPublicKey(): PublicKey | null {
+  if (!_treasuryKeyLoaded) {
+    _treasuryKeyLoaded = true;
+    const key = process.env.TREASURY_PUBLIC_KEY;
+    if (key) {
+      try {
+        _treasuryPublicKey = new PublicKey(key);
+      } catch (e) {
+        console.error('Invalid TREASURY_PUBLIC_KEY:', e);
+        _treasuryPublicKey = null;
+      }
+    }
+  }
+  return _treasuryPublicKey;
+}
+
+// For backward compatibility
+export const TREASURY_PUBLIC_KEY = null as PublicKey | null; // Will be loaded lazily
 
 // Get connection instance (singleton pattern for client-side)
 let connectionInstance: Connection | null = null;
@@ -64,7 +82,7 @@ export function getExplorerUrl(signature: string, type: 'tx' | 'address' = 'tx')
 
 // Check if treasury is configured
 export function isTreasuryConfigured(): boolean {
-  return TREASURY_PUBLIC_KEY !== null;
+  return getTreasuryPublicKey() !== null;
 }
 
 // Platform fee (1%)

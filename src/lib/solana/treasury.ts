@@ -11,7 +11,7 @@ import {
 import bs58 from 'bs58';
 import {
   createConnection,
-  TREASURY_PUBLIC_KEY,
+  getTreasuryPublicKey,
   solToLamports,
   lamportsToSol,
   isTreasuryConfigured,
@@ -37,7 +37,8 @@ export function createTransferToTreasuryInstruction(
   userPubkey: PublicKey,
   amountSol: number
 ): TransactionInstruction | null {
-  if (!TREASURY_PUBLIC_KEY) {
+  const treasuryKey = getTreasuryPublicKey();
+  if (!treasuryKey) {
     console.error('Treasury public key not configured');
     return null;
   }
@@ -46,7 +47,7 @@ export function createTransferToTreasuryInstruction(
 
   return SystemProgram.transfer({
     fromPubkey: userPubkey,
-    toPubkey: TREASURY_PUBLIC_KEY,
+    toPubkey: treasuryKey,
     lamports,
   });
 }
@@ -142,7 +143,8 @@ export async function verifyTransaction(
         const receiver = info.destination;
 
         // Verify receiver is treasury
-        if (TREASURY_PUBLIC_KEY && receiver !== TREASURY_PUBLIC_KEY.toString()) {
+        const treasuryKey = getTreasuryPublicKey();
+        if (treasuryKey && receiver !== treasuryKey.toString()) {
           continue; // Not a transfer to treasury
         }
 
@@ -169,11 +171,12 @@ export async function verifyTransaction(
 
 // Get treasury balance
 export async function getTreasuryBalance(): Promise<number> {
-  if (!TREASURY_PUBLIC_KEY) return 0;
+  const treasuryKey = getTreasuryPublicKey();
+  if (!treasuryKey) return 0;
 
   const connection = createConnection();
   try {
-    const balance = await connection.getBalance(TREASURY_PUBLIC_KEY);
+    const balance = await connection.getBalance(treasuryKey);
     return lamportsToSol(balance);
   } catch {
     return 0;
