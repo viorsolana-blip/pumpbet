@@ -48,13 +48,19 @@ function MobileOverlay() {
       {/* Main content */}
       <div className="flex-1 flex flex-col items-center justify-center px-8">
         {/* Logo */}
-        <Image
-          src="/brand/logo.png"
-          alt="PumpBet"
-          width={140}
-          height={48}
-          className="mb-16"
-        />
+        <div className="flex flex-col items-center mb-12">
+          <Image
+            src="/brand/helmet-logo.png"
+            alt="PumpBet"
+            width={80}
+            height={80}
+            className="mb-4"
+          />
+          <div className="flex items-baseline">
+            <span className="text-2xl text-[#6B7B5E] font-bold tracking-tight" style={{ fontFamily: 'Hyperbole, sans-serif' }}>pumpbet</span>
+            <span className="text-2xl text-[#8B9B7E]" style={{ fontFamily: 'Bambino, sans-serif' }}>.fun</span>
+          </div>
+        </div>
 
         {/* Simple message */}
         <div className="text-center max-w-xs">

@@ -173,7 +173,7 @@ export function Header() {
           {/* Logo */}
           <div className="relative">
             <Image
-              src="/brand/logo.png"
+              src="/brand/helmet-logo.png"
               alt="PumpBet"
               width={40}
               height={40}

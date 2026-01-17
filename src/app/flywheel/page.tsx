@@ -78,14 +78,17 @@ export default function FlywheelPage() {
           </Link>
 
           {/* Center logo */}
-          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-60">
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
             <Image
-              src="/brand/logo.png"
+              src="/brand/helmet-logo.png"
               alt="PumpBet"
-              width={24}
-              height={24}
-              className="rounded"
+              width={32}
+              height={32}
             />
+            <div className="hidden sm:flex items-baseline">
+              <span className="text-sm text-[#5A6A4D] font-bold" style={{ fontFamily: 'Hyperbole, sans-serif' }}>pumpbet</span>
+              <span className="text-sm text-[#8B9B7E]" style={{ fontFamily: 'Bambino, sans-serif' }}>.fun</span>
+            </div>
           </div>
 
           {/* Buy button - properly centered with glow */}
@@ -361,11 +364,10 @@ export default function FlywheelPage() {
         <div className="max-w-7xl mx-auto flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-[#8B9B7E] font-bambino font-bold">
           <div className="flex items-center gap-2">
             <Image
-              src="/brand/logo.png"
+              src="/brand/helmet-logo.png"
               alt="PumpBet"
               width={20}
               height={20}
-              className="rounded"
             />
             <span>pumpbet.fun</span>
           </div>
