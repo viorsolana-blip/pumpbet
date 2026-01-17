@@ -170,11 +170,11 @@ export function Header() {
           onClick={openDashboard}
           className="flex items-center gap-3 hover:scale-105 transition-transform group"
         >
-          {/* Helmet Logo */}
+          {/* Logo */}
           <div className="relative">
             <Image
-              src="/brand/helmet-logo.png"
-              alt="PumpBet"
+              src="/brand/logo.png"
+              alt="Apella"
               width={40}
               height={40}
               className="helmet-wobble"
@@ -182,8 +182,8 @@ export function Header() {
           </div>
           {/* Brand Text */}
           <div className="hidden sm:flex items-baseline">
-            <span className="text-xl text-[#5A6A4D] font-hyperbole tracking-tight">pump</span>
-            <span className="text-xl text-[#3A4A2D]" style={{ fontFamily: 'Bambino, sans-serif' }}>bet.fun</span>
+            <span className="text-xl text-[#5A6A4D] font-hyperbole tracking-tight">apella</span>
+            <span className="text-xl text-[#3A4A2D]" style={{ fontFamily: 'Bambino, sans-serif' }}>.fun</span>
           </div>
         </button>
 
@@ -238,7 +238,7 @@ export function Header() {
           </span>
         </Link>
 
-        {/* $PUMPBET Token Button */}
+        {/* $APELLA Token Button */}
         <a
           href="https://pump.fun"
           target="_blank"
@@ -246,7 +246,7 @@ export function Header() {
           className="group flex items-center gap-2 px-4 py-2 bg-[#6B7B5E] hover:bg-[#5A6A4D] border-2 border-[#4A5A3D] rounded-xl transition-all hover:scale-105 shadow-md"
         >
           <Coins className="w-4 h-4 text-[#E4D4B8]" />
-          <span className="text-sm font-bold text-[#E4D4B8] font-bambino">$PUMPBET</span>
+          <span className="text-sm font-bold text-[#E4D4B8] font-bambino">$APELLA</span>
         </a>
 
         {/* X (Twitter) Link */}

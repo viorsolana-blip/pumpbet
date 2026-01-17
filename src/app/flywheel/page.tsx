@@ -80,8 +80,8 @@ export default function FlywheelPage() {
           {/* Center logo */}
           <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-60">
             <Image
-              src="/brand/helmet-logo.png"
-              alt="PumpBet"
+              src="/brand/logo.png"
+              alt="Apella"
               width={24}
               height={24}
               className="rounded"
@@ -100,7 +100,7 @@ export default function FlywheelPage() {
 
             {/* Button content */}
             <div className="relative flex items-center justify-center gap-2">
-              <span className="text-xs font-bambino font-bold uppercase tracking-wider">buy $pumpbet</span>
+              <span className="text-xs font-bambino font-bold uppercase tracking-wider">buy $apella</span>
               <ExternalLink className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform duration-300" />
             </div>
 
@@ -130,22 +130,20 @@ export default function FlywheelPage() {
 
           {/* Steps - No mascot overlapping */}
           <div className="relative max-w-3xl mx-auto mb-12">
-            {/* Animated ring around active step indicator */}
+            {/* Bouncing Flywheel Logo */}
             <div className="flex justify-center mb-8">
               <div className="relative">
                 <div
-                  className="w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500"
-                  style={{ backgroundColor: `${steps[activeStep].color}20` }}
+                  className="w-24 h-24 rounded-full flex items-center justify-center transition-all duration-500"
+                  style={{ backgroundColor: `${steps[activeStep].color}15` }}
                 >
-                  <div
-                    className="w-14 h-14 rounded-full flex items-center justify-center animate-pulse"
-                    style={{ backgroundColor: steps[activeStep].color }}
-                  >
-                    {(() => {
-                      const StepIcon = steps[activeStep].Icon;
-                      return <StepIcon className="w-7 h-7 text-[#F5F0E1]" />;
-                    })()}
-                  </div>
+                  <Image
+                    src="/brand/flywheel.png"
+                    alt="Flywheel"
+                    width={64}
+                    height={64}
+                    className="animate-bounce-slow"
+                  />
                 </div>
                 {/* Orbiting dots */}
                 <div className="absolute inset-0 animate-spin-slow">
@@ -200,7 +198,7 @@ export default function FlywheelPage() {
               />
               <Image
                 src="/brand/mascot.png"
-                alt="PumpBet"
+                alt="Apella"
                 width={100}
                 height={100}
                 className="relative z-10 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3"
@@ -271,7 +269,7 @@ export default function FlywheelPage() {
               </div>
               <h3 className="text-2xl mb-4 text-[#3A4A2D]" style={{ fontFamily: 'Hyperbole, sans-serif' }}>WE BUYBACK</h3>
               <p className="text-[#6B7B5E] text-sm leading-relaxed font-bambino">
-                70% of all fees go straight to buying $PUMPBET off the market.
+                70% of all fees go straight to buying $APELLA off the market.
                 automatic. transparent. no bullshit.
               </p>
             </div>
@@ -356,7 +354,7 @@ export default function FlywheelPage() {
               rel="noopener noreferrer"
               className="group px-8 py-4 bg-[#6B7B5E] text-[#F5F0E1] font-bambino font-bold uppercase tracking-wider text-sm rounded-xl transition-all hover:scale-105 hover:bg-[#5A6A4D] flex items-center justify-center gap-2 shadow-lg"
             >
-              <span>buy $pumpbet</span>
+              <span>buy $apella</span>
               <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </a>
             <Link
@@ -374,13 +372,13 @@ export default function FlywheelPage() {
         <div className="max-w-7xl mx-auto flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-[#8B9B7E] font-bambino font-bold">
           <div className="flex items-center gap-2">
             <Image
-              src="/brand/helmet-logo.png"
-              alt="PumpBet"
+              src="/brand/logo.png"
+              alt="Apella"
               width={20}
               height={20}
               className="rounded"
             />
-            <span>pumpbet.fun</span>
+            <span>apella.fun</span>
           </div>
           <span>gm from the trenches</span>
         </div>
@@ -394,6 +392,17 @@ export default function FlywheelPage() {
         }
         .animate-spin-slow {
           animation: spin-slow 6s linear infinite;
+        }
+        @keyframes bounce-slow {
+          0%, 100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-12px);
+          }
+        }
+        .animate-bounce-slow {
+          animation: bounce-slow 2s ease-in-out infinite;
         }
       `}</style>
     </div>
