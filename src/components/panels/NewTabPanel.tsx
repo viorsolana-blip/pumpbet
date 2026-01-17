@@ -1,15 +1,25 @@
 'use client';
 
 import Image from 'next/image';
-import { Grid, Zap, MessageSquare, BarChart2, Wallet, Bell, Calendar, Users, Flame, ThumbsUp, Target, Swords } from 'lucide-react';
+import { Grid, Zap, MessageSquare, BarChart2, Wallet, Bell, Calendar, Users, Flame, ThumbsUp, Target, Swords, Rocket } from 'lucide-react';
 import { useStore } from '@/store';
 
 export function NewTabPanel() {
-  const { addTab, setSplitPanels, splitPanels, splitView, tabs } = useStore();
+  const { addTab, setSplitPanels, setActiveTab } = useStore();
 
   const openPanel = (type: string, title: string, color: string) => {
+    // Get fresh state from store to avoid stale closure issues
+    const { splitView, splitPanels, tabs } = useStore.getState();
+
     const newId = addTab({ type: type as any, title, color });
-    if (splitView && newId) {
+
+    if (!newId) return;
+
+    // Set as active tab (works for single-panel mode)
+    setActiveTab(newId);
+
+    // In split view, replace the current 'new' panel with the new panel
+    if (splitView) {
       const currentTabIndex = splitPanels.findIndex(id => {
         const tab = tabs.find(t => t.id === id);
         return tab?.type === 'new';
@@ -23,16 +33,16 @@ export function NewTabPanel() {
   };
 
   const quickActions = [
-    { type: 'kols', title: 'Trenches', icon: Swords, color: '#6B7B5E', desc: 'Bet on KOL milestones' },
-    { type: 'coins', title: 'Coins', icon: ThumbsUp, color: '#5C8A4A', desc: 'Vote on community coins' },
-    { type: 'markets', title: 'Markets', icon: Grid, color: '#8B7355', desc: 'Browse all markets' },
-    { type: 'flow', title: 'Whale Flow', icon: Zap, color: '#5A7A9A', desc: 'Track large trades' },
-    { type: 'chat', title: 'Quick Chat', icon: MessageSquare, color: '#D4A060', desc: 'AI market research' },
-    { type: 'research', title: 'Research', icon: BarChart2, color: '#6B7B5E', desc: 'Organize analysis' },
-    { type: 'portfolio', title: 'Portfolio', icon: Wallet, color: '#A08B70', desc: 'Track positions' },
-    { type: 'alerts', title: 'Alerts', icon: Bell, color: '#C45A4A', desc: 'Set price alerts' },
-    { type: 'calendar', title: 'Calendar', icon: Calendar, color: '#5A7A9A', desc: 'Market resolutions' },
+    { type: 'launch', title: 'Launch', icon: Rocket, color: '#D4A060', desc: 'Create a prediction' },
+    { type: 'trenches', title: 'Trenches', icon: Swords, color: '#6B7B5E', desc: 'Bet on KOL milestones' },
     { type: 'traders', title: 'Leaderboard', icon: Users, color: '#8B7355', desc: 'Top traders' },
+    { type: 'flow', title: 'Whale Flow', icon: Zap, color: '#5A7A9A', desc: 'Track large trades' },
+    { type: 'chat', title: 'Quick Chat', icon: MessageSquare, color: '#8B9B7E', desc: 'AI market research' },
+    { type: 'markets', title: 'Markets', icon: Grid, color: '#6B7B5E', desc: 'Browse all markets' },
+    { type: 'portfolio', title: 'Portfolio', icon: Wallet, color: '#A08B70', desc: 'Track positions' },
+    { type: 'research', title: 'Research', icon: BarChart2, color: '#5A7A9A', desc: 'Organize analysis' },
+    { type: 'alerts', title: 'Alerts', icon: Bell, color: '#C45A4A', desc: 'Set price alerts' },
+    { type: 'calendar', title: 'Calendar', icon: Calendar, color: '#8B9B7E', desc: 'Market resolutions' },
   ];
 
   return (

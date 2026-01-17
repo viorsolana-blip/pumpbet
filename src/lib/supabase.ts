@@ -96,6 +96,30 @@ export interface DBTransaction {
   created_at: string;
 }
 
+// Pending predictions (Launch zone) - awaiting 15 likes to graduate
+export interface DBPendingPrediction {
+  id: string;
+  title: string;
+  description: string;
+  category: 'kol' | 'crypto' | 'token' | 'sports' | 'politics' | 'other';
+  resolution_criteria: string;
+  end_date: string;
+  likes: number;
+  created_by: string | null; // wallet address or null for anonymous
+  is_graduated: boolean;
+  graduated_market_id: string | null; // market ID once graduated
+  created_at: string;
+  image_url?: string | null; // optional logo/image for the prediction
+}
+
+// Track who liked what prediction (prevent duplicate likes)
+export interface DBPredictionLike {
+  id: string;
+  prediction_id: string;
+  user_identifier: string; // wallet address or IP/fingerprint for anonymous
+  created_at: string;
+}
+
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;

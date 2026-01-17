@@ -54,70 +54,70 @@ function AddCoinModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="w-full max-w-md bg-[#0a0a0a] border border-[#1a1a1a] rounded-2xl overflow-hidden"
+        className="w-full max-w-md bg-[#F5F0E1] border-2 border-[#D4CDB8] rounded-2xl overflow-hidden shadow-2xl animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-5 border-b border-[#1a1a1a] flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-white">Submit a Coin</h2>
-          <button onClick={onClose} className="p-1 hover:bg-[#1a1a1a] rounded-lg transition-colors">
-            <X className="w-5 h-5 text-[#666]" />
+        <div className="p-5 border-b-2 border-[#D4CDB8] bg-[#EFEAD9] flex items-center justify-between">
+          <h2 className="text-lg font-bold text-[#3A4A2D] font-bambino">Submit a Coin</h2>
+          <button onClick={onClose} className="p-1.5 hover:bg-[#E8E2D0] rounded-xl transition-colors border border-transparent hover:border-[#D4CDB8]">
+            <X className="w-5 h-5 text-[#6B7B5E]" />
           </button>
         </div>
 
         <div className="p-5 space-y-4">
           {error && (
-            <div className="p-3 bg-[#1f0d0d] border border-[#ef4444]/30 rounded-lg text-[#ef4444] text-sm">
+            <div className="p-3 bg-[#C45A4A]/10 border-2 border-[#C45A4A]/30 rounded-xl text-[#C45A4A] text-sm font-bambino">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm text-[#666] mb-2">Coin Name *</label>
+            <label className="block text-sm text-[#6B7B5E] mb-2 font-bambino font-bold">Coin Name *</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Fartcoin"
-              className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl px-4 py-3 text-white placeholder:text-[#333] focus:outline-none focus:border-[#333]"
+              className="w-full bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-xl px-4 py-3 text-[#3A4A2D] placeholder:text-[#9AAA8D] focus:outline-none focus:border-[#6B7B5E] font-bambino"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-[#666] mb-2">Ticker *</label>
+            <label className="block text-sm text-[#6B7B5E] mb-2 font-bambino font-bold">Ticker *</label>
             <input
               type="text"
               value={ticker}
               onChange={(e) => setTicker(e.target.value.toUpperCase())}
               placeholder="e.g., $FART"
-              className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl px-4 py-3 text-white placeholder:text-[#333] focus:outline-none focus:border-[#333]"
+              className="w-full bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-xl px-4 py-3 text-[#3A4A2D] placeholder:text-[#9AAA8D] focus:outline-none focus:border-[#6B7B5E] font-bambino"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-[#666] mb-2">Description *</label>
+            <label className="block text-sm text-[#6B7B5E] mb-2 font-bambino font-bold">Description *</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What makes this coin special? (10-500 characters)"
               rows={3}
-              className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl px-4 py-3 text-white placeholder:text-[#333] focus:outline-none focus:border-[#333] resize-none"
+              className="w-full bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-xl px-4 py-3 text-[#3A4A2D] placeholder:text-[#9AAA8D] focus:outline-none focus:border-[#6B7B5E] resize-none font-bambino"
             />
-            <p className="text-xs text-[#444] mt-1">{description.length}/500</p>
+            <p className="text-xs text-[#8B9B7E] mt-1 font-satoshi">{description.length}/500</p>
           </div>
 
           <div>
-            <label className="block text-sm text-[#666] mb-2">Category</label>
+            <label className="block text-sm text-[#6B7B5E] mb-2 font-bambino font-bold">Category</label>
             <div className="grid grid-cols-5 gap-2">
               {(['memecoin', 'defi', 'gaming', 'ai', 'other'] as const).map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  className={`py-2 rounded-lg text-xs font-medium transition-all ${
+                  className={`py-2 rounded-xl text-xs font-bold transition-all font-bambino ${
                     category === cat
-                      ? 'bg-white text-black'
-                      : 'bg-[#111] text-[#666] hover:text-white border border-[#1a1a1a]'
+                      ? 'bg-[#6B7B5E] text-[#F5F0E1] border-2 border-[#5A6A4D]'
+                      : 'bg-[#EFEAD9] text-[#6B7B5E] hover:text-[#3A4A2D] border-2 border-[#D4CDB8] hover:border-[#6B7B5E]'
                   }`}
                 >
                   {cat}
@@ -127,48 +127,48 @@ function AddCoinModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div>
-            <label className="block text-sm text-[#666] mb-2">Contract Address (optional)</label>
+            <label className="block text-sm text-[#6B7B5E] mb-2 font-bambino font-bold">Contract Address (optional)</label>
             <input
               type="text"
               value={contractAddress}
               onChange={(e) => setContractAddress(e.target.value)}
               placeholder="Solana address"
-              className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl px-4 py-3 text-white placeholder:text-[#333] focus:outline-none focus:border-[#333] font-mono text-sm"
+              className="w-full bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-xl px-4 py-3 text-[#3A4A2D] placeholder:text-[#9AAA8D] focus:outline-none focus:border-[#6B7B5E] font-mono text-sm"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm text-[#666] mb-2">Twitter (optional)</label>
+              <label className="block text-sm text-[#6B7B5E] mb-2 font-bambino font-bold">Twitter (optional)</label>
               <input
                 type="text"
                 value={twitter}
                 onChange={(e) => setTwitter(e.target.value)}
                 placeholder="@handle"
-                className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl px-4 py-3 text-white placeholder:text-[#333] focus:outline-none focus:border-[#333]"
+                className="w-full bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-xl px-4 py-3 text-[#3A4A2D] placeholder:text-[#9AAA8D] focus:outline-none focus:border-[#6B7B5E] font-bambino"
               />
             </div>
             <div>
-              <label className="block text-sm text-[#666] mb-2">Website (optional)</label>
+              <label className="block text-sm text-[#6B7B5E] mb-2 font-bambino font-bold">Website (optional)</label>
               <input
                 type="text"
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
                 placeholder="https://..."
-                className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl px-4 py-3 text-white placeholder:text-[#333] focus:outline-none focus:border-[#333]"
+                className="w-full bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-xl px-4 py-3 text-[#3A4A2D] placeholder:text-[#9AAA8D] focus:outline-none focus:border-[#6B7B5E] font-bambino"
               />
             </div>
           </div>
 
-          <div className="p-3 bg-[#111] border border-[#1a1a1a] rounded-lg text-xs text-[#666]">
-            <p className="font-medium text-[#888] mb-1">How it works:</p>
+          <div className="p-3 bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-xl text-xs text-[#6B7B5E] font-bambino">
+            <p className="font-bold text-[#5A6A4D] mb-1">How it works:</p>
             <p>Get 15 upvotes and your coin becomes featured with its own betting market!</p>
           </div>
 
           <button
             onClick={handleSubmit}
             disabled={!name || !ticker || !description || isSubmitting || !isConnected}
-            className="w-full py-4 bg-[#22c55e] hover:bg-[#1ea550] disabled:bg-[#111] disabled:text-[#333] text-white font-semibold rounded-xl transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-4 bg-[#5C8A4A] hover:bg-[#4A7A3A] disabled:bg-[#D4CDB8] disabled:text-[#9AAA8D] text-white font-bold rounded-xl transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2 border-2 border-[#4A7A3A] disabled:border-[#B4AD98] font-bambino"
           >
             {isSubmitting ? (
               <>
@@ -272,54 +272,54 @@ function CoinCard({ coin }: { coin: Coin }) {
   const progressTo15 = Math.min(100, (localUpvotes / 15) * 100);
 
   return (
-    <div className={`bg-[#0a0a0a] rounded-xl border transition-all overflow-hidden ${
+    <div className={`bg-[#EFEAD9] rounded-2xl border-2 transition-all overflow-hidden hover:shadow-lg ${
       coin.is_featured
-        ? 'border-[#22c55e]/50 ring-1 ring-[#22c55e]/20'
-        : 'border-[#1a1a1a] hover:border-[#2a2a2a]'
+        ? 'border-[#5C8A4A] ring-2 ring-[#5C8A4A]/20'
+        : 'border-[#D4CDB8] hover:border-[#6B7B5E]'
     }`}>
       <div className="p-4">
         {/* Featured badge */}
         {coin.is_featured && (
-          <div className="flex items-center gap-1.5 text-xs text-[#22c55e] mb-3 font-medium">
-            <Star className="w-3.5 h-3.5 fill-[#22c55e]" />
+          <div className="flex items-center gap-1.5 text-xs text-[#5C8A4A] mb-3 font-bold font-bambino">
+            <Star className="w-3.5 h-3.5 fill-[#5C8A4A]" />
             FEATURED - Betting Market Live!
           </div>
         )}
 
         {/* Header */}
         <div className="flex items-start gap-3 mb-3">
-          <div className="w-12 h-12 rounded-xl bg-[#111] flex items-center justify-center overflow-hidden flex-shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-[#E8E2D0] border-2 border-[#D4CDB8] flex items-center justify-center overflow-hidden flex-shrink-0">
             {coin.image ? (
               <Image src={coin.image} alt={coin.name} width={48} height={48} className="w-full h-full object-cover" />
             ) : (
-              <span className="text-lg font-bold text-[#333]">{coin.ticker.slice(1, 3)}</span>
+              <span className="text-lg font-bold text-[#8B9B7E]">{coin.ticker.slice(1, 3)}</span>
             )}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h3 className="text-white font-medium truncate">{coin.name}</h3>
-              <span className="text-xs px-2 py-0.5 bg-[#111] text-[#666] rounded-md flex-shrink-0">{coin.category}</span>
+              <h3 className="text-[#3A4A2D] font-bold truncate font-bambino">{coin.name}</h3>
+              <span className="text-[10px] px-2 py-0.5 bg-[#E8E2D0] text-[#6B7B5E] rounded-lg flex-shrink-0 font-bambino">{coin.category}</span>
             </div>
-            <p className="text-[#22c55e] text-sm font-medium">{coin.ticker}</p>
+            <p className="text-[#5C8A4A] text-sm font-bold font-satoshi">{coin.ticker}</p>
           </div>
-          <div className={`text-sm font-semibold flex-shrink-0 ${score >= 0 ? 'text-[#22c55e]' : 'text-[#ef4444]'}`}>
+          <div className={`text-sm font-bold flex-shrink-0 font-satoshi ${score >= 0 ? 'text-[#5C8A4A]' : 'text-[#C45A4A]'}`}>
             {score >= 0 ? '+' : ''}{score}
           </div>
         </div>
 
         {/* Description */}
-        <p className="text-[#888] text-sm leading-relaxed mb-4 line-clamp-2">{coin.description}</p>
+        <p className="text-[#6B7B5E] text-sm leading-relaxed mb-4 line-clamp-2 font-bambino">{coin.description}</p>
 
         {/* Progress to featured */}
         {!coin.is_featured && (
           <div className="mb-3">
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className="text-[#555]">Progress to Featured</span>
-              <span className="text-[#666]">{localUpvotes}/15 upvotes</span>
+              <span className="text-[#8B9B7E] font-bambino">Progress to Featured</span>
+              <span className="text-[#6B7B5E] font-bold font-satoshi">{localUpvotes}/15 upvotes</span>
             </div>
-            <div className="h-1.5 bg-[#111] rounded-full overflow-hidden">
+            <div className="h-2 bg-[#E8E2D0] rounded-full overflow-hidden border border-[#D4CDB8]">
               <div
-                className="h-full bg-gradient-to-r from-[#22c55e] to-[#4ade80] transition-all duration-300"
+                className="h-full bg-gradient-to-r from-[#5C8A4A] to-[#7AAA5A] transition-all duration-300"
                 style={{ width: `${progressTo15}%` }}
               />
             </div>
@@ -329,9 +329,9 @@ function CoinCard({ coin }: { coin: Coin }) {
         {/* Sentiment bar (for featured coins) */}
         {coin.is_featured && (
           <div className="mb-3">
-            <div className="h-1.5 bg-[#111] rounded-full overflow-hidden">
+            <div className="h-2 bg-[#E8E2D0] rounded-full overflow-hidden border border-[#D4CDB8]">
               <div
-                className="h-full bg-gradient-to-r from-[#22c55e] to-[#4ade80]"
+                className="h-full bg-gradient-to-r from-[#5C8A4A] to-[#7AAA5A]"
                 style={{ width: `${likePercent}%` }}
               />
             </div>
@@ -343,38 +343,38 @@ function CoinCard({ coin }: { coin: Coin }) {
           <button
             onClick={() => handleVote('up')}
             disabled={isVoting || !isConnected}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all border-2 font-bold font-satoshi ${
               userVote === 'up'
-                ? 'bg-[#22c55e] text-white'
-                : 'bg-[#111] text-[#666] hover:text-[#22c55e] hover:bg-[#0d1f0d] border border-[#1a1a1a]'
+                ? 'bg-[#5C8A4A] text-white border-[#4A7A3A]'
+                : 'bg-[#F5F0E1] text-[#6B7B5E] hover:text-[#5C8A4A] hover:bg-[#5C8A4A]/10 border-[#D4CDB8] hover:border-[#5C8A4A]'
             } ${!isConnected && 'opacity-50 cursor-not-allowed'}`}
           >
             <ThumbsUp className={`w-4 h-4 ${userVote === 'up' ? 'fill-white' : ''}`} />
-            <span className="text-sm font-medium">{localUpvotes}</span>
+            <span className="text-sm">{localUpvotes}</span>
           </button>
           <button
             onClick={() => handleVote('down')}
             disabled={isVoting || !isConnected}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all border-2 font-bold font-satoshi ${
               userVote === 'down'
-                ? 'bg-[#ef4444] text-white'
-                : 'bg-[#111] text-[#666] hover:text-[#ef4444] hover:bg-[#1f0d0d] border border-[#1a1a1a]'
+                ? 'bg-[#C45A4A] text-white border-[#A44A3A]'
+                : 'bg-[#F5F0E1] text-[#6B7B5E] hover:text-[#C45A4A] hover:bg-[#C45A4A]/10 border-[#D4CDB8] hover:border-[#C45A4A]'
             } ${!isConnected && 'opacity-50 cursor-not-allowed'}`}
           >
             <ThumbsDown className={`w-4 h-4 ${userVote === 'down' ? 'fill-white' : ''}`} />
-            <span className="text-sm font-medium">{localDownvotes}</span>
+            <span className="text-sm">{localDownvotes}</span>
           </button>
         </div>
 
         {/* Links */}
         {(coin.twitter || coin.website || coin.contract_address) && (
-          <div className="flex items-center gap-2 mt-3">
+          <div className="flex items-center gap-3 mt-3">
             {coin.twitter && (
               <a
                 href={`https://twitter.com/${coin.twitter.replace('@', '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-[#555] hover:text-[#1da1f2] transition-colors"
+                className="text-xs text-[#8B9B7E] hover:text-[#5A7A9A] transition-colors font-bambino"
               >
                 {coin.twitter}
               </a>
@@ -384,7 +384,7 @@ function CoinCard({ coin }: { coin: Coin }) {
                 href={coin.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-xs text-[#555] hover:text-white transition-colors"
+                className="flex items-center gap-1 text-xs text-[#8B9B7E] hover:text-[#3A4A2D] transition-colors font-bambino"
               >
                 <ExternalLink className="w-3 h-3" />
                 Website
@@ -395,10 +395,10 @@ function CoinCard({ coin }: { coin: Coin }) {
       </div>
 
       {/* Footer */}
-      <div className="px-4 py-2.5 bg-[#050505] border-t border-[#1a1a1a] flex items-center justify-between text-xs text-[#555]">
+      <div className="px-4 py-2.5 bg-[#E8E2D0] border-t-2 border-[#D4CDB8] flex items-center justify-between text-xs text-[#8B9B7E] font-bambino">
         <span>submitted {new Date(coin.created_at).toLocaleDateString()}</span>
         {coin.market_id && (
-          <span className="text-[#22c55e]">Market active</span>
+          <span className="text-[#5C8A4A] font-bold">Market active</span>
         )}
       </div>
     </div>
@@ -444,17 +444,20 @@ export function CoinsPanel() {
     });
 
   return (
-    <div className="h-full bg-[#050505] flex flex-col">
+    <div className="h-full bg-[#F5F0E1] flex flex-col">
+      {/* Decorative top stripe */}
+      <div className="w-full h-2 bg-gradient-to-r from-[#5C8A4A] via-[#8B7355] to-[#5C8A4A]" />
+
       {/* Header */}
-      <div className="border-b border-[#151515] px-4 py-3">
+      <div className="border-b-2 border-[#D4CDB8] px-4 py-3 bg-[#EFEAD9]">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className="text-white font-medium">Community Coins</h2>
-            <p className="text-xs text-[#555]">Submit coins and vote - 15 upvotes = Featured!</p>
+            <h2 className="text-[#3A4A2D] font-bold font-bambino">Community Coins</h2>
+            <p className="text-xs text-[#8B9B7E] font-bambino">Submit coins and vote - 15 upvotes = Featured!</p>
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#22c55e] hover:bg-[#1ea550] text-white text-sm font-medium rounded-lg transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#5C8A4A] hover:bg-[#4A7A3A] text-white text-sm font-bold rounded-xl transition-colors border-2 border-[#4A7A3A] font-bambino"
           >
             <Plus className="w-4 h-4" />
             Submit
@@ -463,26 +466,26 @@ export function CoinsPanel() {
 
         {/* Search */}
         <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#333]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8B9B7E]" />
           <input
             type="text"
             placeholder="Search coins..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder:text-[#333] focus:outline-none focus:border-[#2a2a2a]"
+            className="w-full bg-[#F5F0E1] border-2 border-[#D4CDB8] rounded-xl pl-10 pr-4 py-2 text-sm text-[#3A4A2D] placeholder:text-[#9AAA8D] focus:outline-none focus:border-[#6B7B5E] font-bambino"
           />
         </div>
 
         {/* Filters */}
         <div className="flex items-center gap-2 flex-wrap">
           {/* Sort */}
-          <div className="flex items-center gap-1 bg-[#0a0a0a] rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-[#E8E2D0] rounded-xl p-1 border-2 border-[#D4CDB8]">
             {(['hot', 'new', 'top'] as const).map((s) => (
               <button
                 key={s}
                 onClick={() => setSort(s)}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                  sort === s ? 'bg-[#1a1a1a] text-white' : 'text-[#555] hover:text-[#888]'
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all font-bambino ${
+                  sort === s ? 'bg-[#6B7B5E] text-[#F5F0E1]' : 'text-[#6B7B5E] hover:text-[#3A4A2D]'
                 }`}
               >
                 {s === 'hot' && <Flame className="w-3 h-3" />}
@@ -493,15 +496,15 @@ export function CoinsPanel() {
             ))}
           </div>
 
-          <div className="w-px h-5 bg-[#1a1a1a]" />
+          <div className="w-px h-5 bg-[#D4CDB8]" />
 
           {/* Category filter */}
           {(['all', 'memecoin', 'defi', 'ai', 'gaming', 'other'] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                filter === f ? 'bg-[#1a1a1a] text-white' : 'text-[#555] hover:text-[#888]'
+              className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all font-bambino ${
+                filter === f ? 'bg-[#6B7B5E] text-[#F5F0E1]' : 'text-[#6B7B5E] hover:text-[#3A4A2D] border border-[#D4CDB8]'
               }`}
             >
               {f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1)}
@@ -514,14 +517,14 @@ export function CoinsPanel() {
       <div className="flex-1 overflow-y-auto p-4">
         {coinsLoading ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 text-[#333] animate-spin mb-3" />
-            <p className="text-[#666] text-sm">Loading coins...</p>
+            <Loader2 className="w-8 h-8 text-[#6B7B5E] animate-spin mb-3" />
+            <p className="text-[#6B7B5E] text-sm font-bambino">Loading coins...</p>
           </div>
         ) : filteredCoins.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Search className="w-8 h-8 text-[#333] mb-3" />
-            <p className="text-[#666] text-sm">No coins found</p>
-            <p className="text-[#444] text-xs mt-1">Be the first to submit one!</p>
+            <Search className="w-8 h-8 text-[#D4CDB8] mb-3" />
+            <p className="text-[#6B7B5E] text-sm font-bambino">No coins found</p>
+            <p className="text-[#8B9B7E] text-xs mt-1 font-bambino">Be the first to submit one!</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -534,8 +537,8 @@ export function CoinsPanel() {
 
       {/* Wallet connection notice */}
       {!isConnected && (
-        <div className="px-4 py-3 bg-[#0a0a0a] border-t border-[#1a1a1a] text-center">
-          <p className="text-xs text-[#555]">Connect your wallet to vote and submit coins</p>
+        <div className="px-4 py-3 bg-[#EFEAD9] border-t-2 border-[#D4CDB8] text-center">
+          <p className="text-xs text-[#8B9B7E] font-bambino">Connect your wallet to vote and submit coins</p>
         </div>
       )}
 

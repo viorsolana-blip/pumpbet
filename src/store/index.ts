@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { fetchAllMarkets, generateFlowTrades, searchMarkets } from '@/lib/api/markets';
 
-export type TabType = 'markets' | 'event' | 'flow' | 'research' | 'chat' | 'traders' | 'alerts' | 'portfolio' | 'wallet' | 'bonds' | 'calendar' | 'kols' | 'trenches' | 'coins' | 'new';
+export type TabType = 'markets' | 'event' | 'flow' | 'research' | 'chat' | 'traders' | 'alerts' | 'portfolio' | 'wallet' | 'bonds' | 'calendar' | 'kols' | 'trenches' | 'coins' | 'launch' | 'new';
 
 export interface Tab {
   id: string;
@@ -149,6 +149,21 @@ export interface LiquidityPosition {
   createdAt: string;
 }
 
+// Pending prediction (awaiting 15 likes to graduate)
+export interface PendingPrediction {
+  id: string;
+  title: string;
+  description: string;
+  category: 'kol' | 'crypto' | 'token' | 'sports' | 'politics' | 'other';
+  resolutionCriteria: string;
+  endDate: string;
+  likes: number;
+  createdBy: string | null; // wallet address or null for anonymous
+  createdAt: string;
+  isGraduated: boolean;
+  imageUrl?: string | null; // optional logo/image for the prediction
+}
+
 interface AppState {
   // Tabs
   tabs: Tab[];
@@ -258,6 +273,13 @@ interface AppState {
   fetchUserLPPositions: () => Promise<void>;
   addLiquidity: (marketId: string, amount: number) => Promise<{ success: boolean; message: string }>;
   removeLiquidity: (marketId: string) => Promise<{ success: boolean; message: string }>;
+
+  // Pending Predictions (Launch zone)
+  pendingPredictions: PendingPrediction[];
+  pendingPredictionsLoading: boolean;
+  fetchPendingPredictions: () => Promise<void>;
+  createPendingPrediction: (prediction: Omit<PendingPrediction, 'id' | 'likes' | 'createdAt' | 'isGraduated'>) => Promise<{ success: boolean; message: string; prediction?: PendingPrediction }>;
+  likePendingPrediction: (predictionId: string) => Promise<{ success: boolean; likes: number; isGraduated: boolean }>;
 }
 
 // Mock data
@@ -1610,6 +1632,96 @@ export const useStore = create<AppState>((set, get) => ({
     } catch (error) {
       console.error('Error removing liquidity:', error);
       return { success: false, message: 'Network error. Please try again.' };
+    }
+  },
+
+  // Pending Predictions (Launch zone)
+  pendingPredictions: [],
+  pendingPredictionsLoading: false,
+
+  fetchPendingPredictions: async () => {
+    set({ pendingPredictionsLoading: true });
+    try {
+      const response = await fetch('/api/launch');
+      const data = await response.json();
+
+      if (data.success && data.predictions) {
+        // Transform snake_case API fields to camelCase for frontend
+        const transformedPredictions: PendingPrediction[] = data.predictions.map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          description: p.description,
+          category: p.category,
+          resolutionCriteria: p.resolution_criteria || p.resolutionCriteria,
+          endDate: p.end_date || p.endDate,
+          likes: p.likes,
+          createdBy: p.created_by || p.createdBy,
+          createdAt: p.created_at || p.createdAt,
+          isGraduated: p.is_graduated || p.isGraduated || false,
+          imageUrl: p.image_url || p.imageUrl || null,
+        }));
+        set({ pendingPredictions: transformedPredictions, pendingPredictionsLoading: false });
+      } else {
+        set({ pendingPredictionsLoading: false });
+      }
+    } catch (error) {
+      console.error('Error fetching pending predictions:', error);
+      set({ pendingPredictionsLoading: false });
+    }
+  },
+
+  createPendingPrediction: async (prediction) => {
+    try {
+      const response = await fetch('/api/launch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(prediction),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        get().fetchPendingPredictions();
+        return { success: true, message: 'Prediction created!', prediction: data.prediction };
+      } else {
+        return { success: false, message: data.error || 'Failed to create prediction' };
+      }
+    } catch (error) {
+      console.error('Error creating prediction:', error);
+      return { success: false, message: 'Network error. Please try again.' };
+    }
+  },
+
+  likePendingPrediction: async (predictionId) => {
+    try {
+      const response = await fetch(`/api/launch/${predictionId}/like`, {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update local state
+        set((state) => ({
+          pendingPredictions: state.pendingPredictions.map((p) =>
+            p.id === predictionId
+              ? { ...p, likes: data.likes, isGraduated: data.isGraduated }
+              : p
+          ).filter((p) => !p.isGraduated), // Remove graduated ones
+        }));
+
+        // If graduated, refresh KOL bets
+        if (data.isGraduated) {
+          get().fetchKolBets();
+        }
+
+        return { success: true, likes: data.likes, isGraduated: data.isGraduated };
+      } else {
+        return { success: false, likes: 0, isGraduated: false };
+      }
+    } catch (error) {
+      console.error('Error liking prediction:', error);
+      return { success: false, likes: 0, isGraduated: false };
     }
   },
 }));

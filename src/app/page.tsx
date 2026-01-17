@@ -13,6 +13,8 @@ import { NewTabPanel } from '@/components/panels/NewTabPanel';
 import { KOLPanel } from '@/components/panels/KOLPanel';
 import { TrenchesPanel } from '@/components/panels/TrenchesPanel';
 import { CoinsPanel } from '@/components/panels/CoinsPanel';
+import { TradersPanel } from '@/components/panels/TradersPanel';
+import { LaunchPanel } from '@/components/panels/LaunchPanel';
 import { SettingsModal } from '@/components/modals/SettingsModal';
 import { OnboardingModal } from '@/components/modals/OnboardingModal';
 import { TutorialModal } from '@/components/modals/TutorialModal';
@@ -201,7 +203,7 @@ export default function Home() {
       type: 'event',
       title: market.title.length > 20 ? market.title.slice(0, 20) + '...' : market.title,
       eventId: market.id,
-      color: '#ff0000',
+      color: '#5C8A4A',
     });
     if (newId) {
       setFullScreenTab(newId);
@@ -240,6 +242,8 @@ export default function Home() {
         return <NewTabPanel />;
       case 'traders':
         return <TradersPanel />;
+      case 'launch':
+        return <LaunchPanel />;
       case 'portfolio':
         return <PortfolioPanel />;
       case 'wallet':
@@ -267,7 +271,7 @@ export default function Home() {
   const activeTab = tabs.find((t) => t.id === activeTabId);
 
   return (
-    <div className="h-screen flex flex-col bg-[#050505]">
+    <div className="h-screen flex flex-col bg-[#F5F0E1]">
       <MobileOverlay />
       <Header />
 
@@ -275,25 +279,25 @@ export default function Home() {
       {fullScreenTabData ? (
         <main className="flex-1 flex flex-col overflow-hidden">
           {/* Full screen header with back button */}
-          <div className="h-10 bg-[#050505] flex items-center border-b border-[#1a1a1a] px-2">
+          <div className="h-12 bg-[#EFEAD9] flex items-center border-b-2 border-[#D4CDB8] px-3">
             <button
               onClick={returnToSplitView}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[#ff0000] hover:bg-[#cc0000] rounded-lg transition-colors mr-3"
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#6B7B5E] hover:bg-[#5A6A4D] rounded-xl transition-colors mr-3 border-2 border-[#5A6A4D]"
             >
-              <ArrowLeft className="w-4 h-4 text-white" />
-              <span className="text-sm text-white font-medium">Back to Dashboard</span>
+              <ArrowLeft className="w-4 h-4 text-[#F5F0E1]" />
+              <span className="text-sm text-[#F5F0E1] font-bambino font-bold">Back to Dashboard</span>
             </button>
             <button
               onClick={returnToSplitView}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[#1a1a1a] hover:bg-[#222] rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#F5F0E1] hover:bg-[#E8E2D0] rounded-xl transition-colors border-2 border-[#D4CDB8]"
             >
-              <LayoutGrid className="w-4 h-4 text-[#888]" />
-              <span className="text-sm text-[#888]">3-Panel View</span>
+              <LayoutGrid className="w-4 h-4 text-[#6B7B5E]" />
+              <span className="text-sm text-[#6B7B5E] font-bambino font-bold">3-Panel View</span>
             </button>
             <div className="flex-1" />
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: fullScreenTabData.color || '#ff0000' }} />
-              <span className="text-sm text-white">{fullScreenTabData.title}</span>
+              <div className="w-2 h-2 rounded-full bg-[#5C8A4A] animate-pulse" />
+              <span className="text-sm text-[#3A4A2D] font-bambino font-bold">{fullScreenTabData.title}</span>
             </div>
           </div>
           <div className="flex-1 overflow-hidden">
@@ -312,7 +316,7 @@ export default function Home() {
               {/* Drag handle */}
               {index > 0 && (
                 <div
-                  className="absolute left-0 top-0 bottom-0 w-1 cursor-col-resize z-10 group hover:bg-[#ff0000] transition-colors"
+                  className="absolute left-0 top-0 bottom-0 w-1 cursor-col-resize z-10 group hover:bg-[#6B7B5E] bg-[#D4CDB8] transition-colors"
                   onMouseDown={() => handleMouseDown(index - 1)}
                 >
                   <div className="absolute left-0 top-0 bottom-0 w-4 -translate-x-1/2" />
@@ -320,20 +324,19 @@ export default function Home() {
               )}
 
               {/* Panel Tab Bar */}
-              <div className={`h-8 bg-[#050505] flex items-center border-b border-[#1a1a1a] ${index > 0 ? 'border-l border-[#1a1a1a]' : ''}`}>
+              <div className={`h-8 bg-[#EFEAD9] flex items-center border-b-2 border-[#D4CDB8] ${index > 0 ? 'border-l-2 border-[#D4CDB8]' : ''}`}>
                 <div className="flex items-center flex-1 min-w-0 px-2">
                   <div
-                    className="w-2 h-2 rounded-full mr-2 flex-shrink-0"
-                    style={{ backgroundColor: tab.color || '#ff0000' }}
+                    className="w-2 h-2 rounded-full mr-2 flex-shrink-0 bg-[#5C8A4A]"
                   />
-                  <span className="text-xs text-white truncate">
+                  <span className="text-xs text-[#3A4A2D] font-bambino font-bold truncate">
                     {tab.title}
                   </span>
                 </div>
               </div>
 
               {/* Panel Content */}
-              <div className={`flex-1 overflow-hidden ${index > 0 ? 'border-l border-[#1a1a1a]' : ''}`}>
+              <div className={`flex-1 overflow-hidden ${index > 0 ? 'border-l-2 border-[#D4CDB8]' : ''}`}>
                 {renderPanelContent(tab)}
               </div>
             </div>
@@ -342,27 +345,24 @@ export default function Home() {
       ) : (
         // Single panel view with tab bar
         <>
-          <div className="h-10 bg-[#050505] flex items-center border-b border-[#1a1a1a]">
+          <div className="h-10 bg-[#EFEAD9] flex items-center border-b-2 border-[#D4CDB8]">
             <div className="flex items-center flex-1 overflow-x-auto">
               {tabs.map((tab) => (
                 <div
                   key={tab.id}
-                  className={`group flex items-center gap-2 px-3 py-2 border-r border-[#1a1a1a] cursor-pointer transition-all relative ${
+                  className={`group flex items-center gap-2 px-3 py-2 border-r-2 border-[#D4CDB8] cursor-pointer transition-all relative ${
                     tab.id === activeTabId
-                      ? 'bg-[#0a0a0a]'
-                      : 'bg-[#050505] hover:bg-[#0a0a0a]'
+                      ? 'bg-[#F5F0E1]'
+                      : 'bg-[#EFEAD9] hover:bg-[#F5F0E1]'
                   }`}
                   onClick={() => setActiveTab(tab.id)}
                 >
                   {tab.id === activeTabId && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#ff0000]" />
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#6B7B5E]" />
                   )}
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: tab.color || '#ff0000' }}
-                  />
-                  <span className={`text-sm transition-colors max-w-[120px] truncate ${
-                    tab.id === activeTabId ? 'text-white' : 'text-[#666] group-hover:text-[#888]'
+                  <div className="w-2 h-2 rounded-full bg-[#5C8A4A]" />
+                  <span className={`text-sm font-bambino font-bold transition-colors max-w-[120px] truncate ${
+                    tab.id === activeTabId ? 'text-[#3A4A2D]' : 'text-[#8B9B7E] group-hover:text-[#5A6A4D]'
                   }`}>
                     {tab.title}
                   </span>
@@ -371,36 +371,36 @@ export default function Home() {
                       e.stopPropagation();
                       removeTab(tab.id);
                     }}
-                    className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#1a1a1a] rounded transition-all ml-1"
+                    className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#E8E2D0] rounded transition-all ml-1"
                   >
-                    <X className="w-3 h-3 text-[#555] hover:text-[#ff0000]" />
+                    <X className="w-3 h-3 text-[#8B9B7E] hover:text-[#C45A4A]" />
                   </button>
                 </div>
               ))}
               <button
                 onClick={handleAddTab}
-                className="p-2 hover:bg-[#141414] rounded-lg transition-colors ml-1"
+                className="p-2 hover:bg-[#E8E2D0] rounded-lg transition-colors ml-1"
               >
-                <Plus className="w-4 h-4 text-[#444] hover:text-[#ff0000]" />
+                <Plus className="w-4 h-4 text-[#8B9B7E] hover:text-[#5C8A4A]" />
               </button>
             </div>
 
-            <div className="flex items-center gap-0.5 px-2 border-l border-[#1a1a1a]">
+            <div className="flex items-center gap-0.5 px-2 border-l-2 border-[#D4CDB8]">
               <button
                 onClick={() => setSplitView(true)}
-                className="p-1.5 hover:bg-[#141414] rounded-lg transition-colors"
+                className="p-1.5 hover:bg-[#E8E2D0] rounded-lg transition-colors"
                 title="Split view"
               >
-                <Columns className="w-4 h-4 text-[#444] hover:text-white" />
+                <Columns className="w-4 h-4 text-[#8B9B7E] hover:text-[#3A4A2D]" />
               </button>
-              <button className="p-1.5 hover:bg-[#141414] rounded-lg transition-colors">
-                <Square className="w-4 h-4 text-[#444] hover:text-white" />
+              <button className="p-1.5 hover:bg-[#E8E2D0] rounded-lg transition-colors">
+                <Square className="w-4 h-4 text-[#8B9B7E] hover:text-[#3A4A2D]" />
               </button>
-              <button className="p-1.5 hover:bg-[#141414] rounded-lg transition-colors">
-                <MessageSquare className="w-4 h-4 text-[#444] hover:text-white" />
+              <button className="p-1.5 hover:bg-[#E8E2D0] rounded-lg transition-colors">
+                <MessageSquare className="w-4 h-4 text-[#8B9B7E] hover:text-[#3A4A2D]" />
               </button>
-              <button className="p-1.5 hover:bg-[#141414] rounded-lg transition-colors">
-                <MoreHorizontal className="w-4 h-4 text-[#444] hover:text-white" />
+              <button className="p-1.5 hover:bg-[#E8E2D0] rounded-lg transition-colors">
+                <MoreHorizontal className="w-4 h-4 text-[#8B9B7E] hover:text-[#3A4A2D]" />
               </button>
             </div>
           </div>
@@ -417,73 +417,6 @@ export default function Home() {
   );
 }
 
-// Leaderboard panel
-function TradersPanel() {
-  const traders = [
-    { rank: 1, name: 'TrumpWin123', score: 95, pnl: '+$36K', volume: '$211K', winRate: '68%' },
-    { rank: 2, name: 'CryptoWhale', score: 92, pnl: '+$28K', volume: '$185K', winRate: '72%' },
-    { rank: 3, name: 'SportsBetter', score: 89, pnl: '+$22K', volume: '$142K', winRate: '65%' },
-    { rank: 4, name: 'PoliticalPundit', score: 87, pnl: '+$18K', volume: '$98K', winRate: '71%' },
-    { rank: 5, name: 'AITrader', score: 85, pnl: '+$15K', volume: '$76K', winRate: '69%' },
-    { rank: 6, name: 'MarketMaker01', score: 83, pnl: '+$12K', volume: '$65K', winRate: '63%' },
-    { rank: 7, name: 'DegenGambler', score: 81, pnl: '+$10K', volume: '$54K', winRate: '58%' },
-    { rank: 8, name: 'ValueHunter', score: 79, pnl: '+$8K', volume: '$43K', winRate: '66%' },
-  ];
-
-  const getRankBadge = (rank: number) => {
-    if (rank === 1) return 'bg-[#D4A060] text-white';
-    if (rank === 2) return 'bg-[#A08B70] text-white';
-    if (rank === 3) return 'bg-[#8B7355] text-white';
-    return 'bg-[#EFEAD9] text-[#5A6A4D]';
-  };
-
-  return (
-    <div className="h-full bg-[#F5F0E1] p-6 overflow-y-auto animate-fade-in">
-      <h2 className="text-xl font-bold text-[#3A4A2D] mb-6 font-bambino">Top Traders</h2>
-      <div className="bg-[#EFEAD9] border-2 border-[#D4CDB8] rounded-2xl overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b-2 border-[#D4CDB8] bg-[#E8E2D0]">
-              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Rank</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Trader</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Score</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">P&L</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Volume</th>
-              <th className="px-4 py-3 text-left text-[10px] text-[#6B7B5E] font-medium uppercase tracking-wider font-satoshi">Win Rate</th>
-            </tr>
-          </thead>
-          <tbody>
-            {traders.map((trader, idx) => (
-              <tr
-                key={trader.rank}
-                className="border-b border-[#D4CDB8] last:border-0 hover:bg-[#E8E2D0] cursor-pointer animate-fade-in-up transition-colors"
-                style={{ animationDelay: `${idx * 50}ms` }}
-              >
-                <td className="px-4 py-3">
-                  <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${getRankBadge(trader.rank)}`}>
-                    {trader.rank}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-[#6B7B5E] flex items-center justify-center border-2 border-[#4A5A3D]">
-                      <span className="text-xs text-[#E4D4B8] font-bold">{trader.name.charAt(0)}</span>
-                    </div>
-                    <span className="text-sm text-[#3A4A2D] font-bambino">{trader.name}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-[#3A4A2D] font-bold font-satoshi">{trader.score}</td>
-                <td className="px-4 py-3 text-sm text-[#5C8A4A] font-bold font-satoshi">{trader.pnl}</td>
-                <td className="px-4 py-3 text-sm text-[#5A6A4D] font-satoshi">{trader.volume}</td>
-                <td className="px-4 py-3 text-sm text-[#5A6A4D] font-satoshi">{trader.winRate}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
 
 function PortfolioPanel() {
   const { userPositions, fetchUserPositions, isConnected, walletType, walletAddressFull, userLPPositions, fetchUserLPPositions, addPendingTransaction, updateTransactionStatus, removePendingTransaction } = useStore();

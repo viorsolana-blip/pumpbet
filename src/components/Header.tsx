@@ -187,27 +187,22 @@ export function Header() {
           </div>
         </button>
 
-        {/* Nav Pills */}
-        <div className="hidden lg:flex items-center gap-1 ml-4">
-          <button
-            onClick={() => addTab({ type: 'kols', title: 'Trenches', color: '#6B7B5E' })}
-            className="px-3 py-1.5 text-sm text-[#5A6A4D] hover:bg-[#EFEAD9] rounded-full transition-colors font-bambino"
-          >
-            Trenches
-          </button>
-          <button
-            onClick={() => addTab({ type: 'coins', title: 'Coins', color: '#5C8A4A' })}
-            className="px-3 py-1.5 text-sm text-[#5A6A4D] hover:bg-[#EFEAD9] rounded-full transition-colors font-bambino"
-          >
-            Coins
-          </button>
-          <button
-            onClick={() => addTab({ type: 'traders', title: 'Leaderboard', color: '#8B7355' })}
-            className="px-3 py-1.5 text-sm text-[#5A6A4D] hover:bg-[#EFEAD9] rounded-full transition-colors font-bambino"
-          >
-            Leaderboard
-          </button>
-        </div>
+        {/* Launch Button */}
+        <button
+          onClick={() => {
+            const newId = addTab({ type: 'launch', title: 'Launch', color: '#D4A060' });
+            if (splitView && newId) {
+              const { splitPanels } = useStore.getState();
+              const newPanels = [...splitPanels];
+              newPanels[0] = newId;
+              setSplitPanels(newPanels);
+            }
+          }}
+          className="hidden lg:flex items-center gap-2 ml-4 px-4 py-2 bg-gradient-to-r from-[#D4A060] to-[#C49050] hover:from-[#E4B070] hover:to-[#D4A060] text-white rounded-xl font-bambino font-bold text-sm transition-all hover:scale-105 shadow-md hover:shadow-lg border-2 border-[#B08040]"
+        >
+          <Zap className="w-4 h-4" />
+          Launch
+        </button>
       </div>
 
       {/* Center - Fun tagline */}
