@@ -27,12 +27,15 @@ function WalletStateSync({ children }: { children: ReactNode }) {
       // Fetch real balance
       const fetchBalance = async () => {
         try {
-          const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+          const rpcUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || clusterApiUrl('devnet');
+          console.log('Fetching balance from:', rpcUrl, 'for wallet:', publicKey.toBase58());
+          const connection = new Connection(rpcUrl, 'confirmed');
           const balance = await connection.getBalance(publicKey);
+          console.log('Balance fetched:', balance / 1e9, 'SOL');
           setBalance(balance / 1e9); // Convert lamports to SOL
         } catch (error) {
           console.error('Failed to fetch balance:', error);
-          setBalance(0);
+          // Don't set to 0 on error, keep previous balance
         }
       };
 
