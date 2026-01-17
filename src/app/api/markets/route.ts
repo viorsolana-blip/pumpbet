@@ -363,12 +363,41 @@ function convertPolymarketEvent(event: PolymarketEvent): any | null {
     }
   }
 
-  const outcomes = outcomeNames.map((name: string, i: number) => ({
-    id: `${market.id || event.id}-${i}`,
-    name,
-    price: parseFloat(prices[i] || '0.5') * 100,
-    priceChange24h: (Math.random() - 0.5) * 10,
-  }));
+  // Parse prices and ensure they're valid
+  let yesPrice = parseFloat(prices[0] || '0.5') * 100;
+  let noPrice = parseFloat(prices[1] || '0.5') * 100;
+
+  // If prices look invalid (e.g., 0/100 from multi-outcome markets), default to 50/50
+  if (yesPrice < 1 && noPrice > 99) {
+    yesPrice = 50;
+    noPrice = 50;
+  } else if (yesPrice > 99 && noPrice < 1) {
+    yesPrice = 50;
+    noPrice = 50;
+  }
+
+  // Ensure prices sum to ~100
+  const total = yesPrice + noPrice;
+  if (total > 0 && Math.abs(total - 100) > 10) {
+    // Normalize if they don't sum to 100
+    yesPrice = (yesPrice / total) * 100;
+    noPrice = (noPrice / total) * 100;
+  }
+
+  const outcomes = [
+    {
+      id: `${market.id || event.id}-yes`,
+      name: outcomeNames[0] || 'Yes',
+      price: Math.round(yesPrice * 10) / 10,
+      priceChange24h: (Math.random() - 0.5) * 10,
+    },
+    {
+      id: `${market.id || event.id}-no`,
+      name: outcomeNames[1] || 'No',
+      price: Math.round(noPrice * 10) / 10,
+      priceChange24h: (Math.random() - 0.5) * 10,
+    },
+  ];
 
   return {
     id: market.id || event.id,
