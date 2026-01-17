@@ -1,9 +1,16 @@
-import { Connection, PublicKey, clusterApiUrl, Cluster } from '@solana/web3.js';
+import { Connection, PublicKey, Cluster } from '@solana/web3.js';
 
 // Network configuration
 export const NETWORK: Cluster = (process.env.NEXT_PUBLIC_SOLANA_NETWORK as Cluster) || 'devnet';
 
-export const RPC_URL = process.env.SOLANA_RPC_URL || clusterApiUrl(NETWORK);
+// Direct RPC URLs (clusterApiUrl is broken in some builds)
+const RPC_URLS: Record<string, string> = {
+  'devnet': 'https://api.devnet.solana.com',
+  'testnet': 'https://api.testnet.solana.com',
+  'mainnet-beta': 'https://api.mainnet-beta.solana.com',
+};
+
+export const RPC_URL = process.env.SOLANA_RPC_URL || RPC_URLS[NETWORK] || 'https://api.devnet.solana.com';
 
 // Treasury wallet configuration (lazy-loaded to avoid build-time errors)
 let _treasuryPublicKey: PublicKey | null = null;
