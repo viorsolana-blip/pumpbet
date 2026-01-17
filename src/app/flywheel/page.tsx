@@ -132,26 +132,14 @@ export default function FlywheelPage() {
           <div className="relative max-w-3xl mx-auto mb-12">
             {/* Bouncing Flywheel Logo */}
             <div className="flex justify-center mb-8">
-              <div className="relative">
-                <div
-                  className="w-24 h-24 rounded-full flex items-center justify-center transition-all duration-500"
-                  style={{ backgroundColor: `${steps[activeStep].color}15` }}
-                >
-                  <Image
-                    src="/brand/flywheel.png"
-                    alt="Flywheel"
-                    width={64}
-                    height={64}
-                    className="animate-bounce-slow"
-                  />
-                </div>
-                {/* Orbiting dots */}
-                <div className="absolute inset-0 animate-spin-slow">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 w-2 h-2 rounded-full bg-[#6B7B5E]" />
-                </div>
-                <div className="absolute inset-0 animate-spin-slow" style={{ animationDirection: 'reverse', animationDuration: '4s' }}>
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1 w-2 h-2 rounded-full bg-[#8B7355]" />
-                </div>
+              <div className="animate-bounce-slow">
+                <Image
+                  src="/brand/flywheel.png"
+                  alt="Flywheel"
+                  width={160}
+                  height={160}
+                  className="drop-shadow-lg"
+                />
               </div>
             </div>
 
