@@ -38,6 +38,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+        {/* Black screen overlay - remove this div to show the site */}
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: '#000',
+          zIndex: 99999
+        }} />
         {children}
         <TransactionToast />
       </body>
