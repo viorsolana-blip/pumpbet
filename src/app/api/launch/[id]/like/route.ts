@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, isSupabaseConfigured, DBPendingPrediction } from '@/lib/supabase';
 import { headers } from 'next/headers';
+import { inMemoryPredictions, inMemoryLikes } from '../../route';
 
 const GRADUATION_THRESHOLD = 15;
-
-// In-memory storage (shared with main route)
-const inMemoryPredictions: Map<string, DBPendingPrediction> = new Map();
-const inMemoryLikes: Set<string> = new Set(); // "predictionId:userIdentifier"
 
 // Helper to get user identifier from request
 function getUserIdentifier(request: NextRequest): string {
@@ -168,27 +165,39 @@ export async function POST(
       );
     }
 
-    // Find prediction in the imported module's array
-    // We need to fetch from the main route's mock data
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/launch`);
-    const data = await response.json();
-    const prediction = data.predictions?.find((p: DBPendingPrediction) => p.id === predictionId);
+    // Find prediction in the shared array
+    const predictionIndex = inMemoryPredictions.findIndex(p => p.id === predictionId);
 
-    if (!prediction) {
+    if (predictionIndex === -1) {
       return NextResponse.json(
         { success: false, error: 'Prediction not found' },
         { status: 404 }
       );
     }
 
+    const prediction = inMemoryPredictions[predictionIndex];
+
+    if (prediction.is_graduated) {
+      return NextResponse.json(
+        { success: false, error: 'Prediction already graduated' },
+        { status: 400 }
+      );
+    }
+
     // Add the like
     inMemoryLikes.add(likeKey);
-    const newLikes = prediction.likes + 1;
 
-    // Update the prediction (this won't persist across requests in the simple mock)
-    // In a real app, this would update the shared storage
+    // Update the likes count directly in the shared array
+    const newLikes = prediction.likes + 1;
+    inMemoryPredictions[predictionIndex] = {
+      ...prediction,
+      likes: newLikes,
+    };
+
+    // Check if should graduate
     let isGraduated = false;
     if (newLikes >= GRADUATION_THRESHOLD) {
+      inMemoryPredictions[predictionIndex].is_graduated = true;
       isGraduated = true;
     }
 

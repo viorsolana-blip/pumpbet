@@ -3,7 +3,8 @@ import { supabaseAdmin, isSupabaseConfigured, DBPendingPrediction } from '@/lib/
 
 // In-memory storage for when Supabase is not configured
 // Note: image_url is null for mock data - cards will show category icons instead
-const inMemoryPredictions: DBPendingPrediction[] = [
+// Exported so the like route can access the same data
+export const inMemoryPredictions: DBPendingPrediction[] = [
   {
     id: 'pred-1',
     title: 'Will PEPE hit $10B market cap?',
@@ -76,7 +77,7 @@ const inMemoryPredictions: DBPendingPrediction[] = [
   },
 ];
 
-const inMemoryLikes: { predictionId: string; userIdentifier: string }[] = [];
+export const inMemoryLikes: Set<string> = new Set(); // "predictionId:userIdentifier"
 
 // GET - Fetch all pending predictions
 export async function GET(request: NextRequest) {
