@@ -233,9 +233,9 @@ export function Header() {
           </span>
         </Link>
 
-        {/* $APELLA Token Button */}
+        {/* $PUMPBET Token Button */}
         <a
-          href="https://pump.fun"
+          href="https://pump.fun/coin/9Q7PuJrzrFrkQDkCrkDL6eXpUuN4hXAmxeHtAdH7pump"
           target="_blank"
           rel="noopener noreferrer"
           className="group flex items-center gap-2 px-4 py-2 bg-[#6B7B5E] hover:bg-[#5A6A4D] border-2 border-[#4A5A3D] rounded-xl transition-all hover:scale-105 shadow-md"
@@ -246,7 +246,7 @@ export function Header() {
 
         {/* X (Twitter) Link */}
         <a
-          href="https://x.com/PumpBetFun"
+          href="https://x.com/PumpBetDotFun"
           target="_blank"
           rel="noopener noreferrer"
           className="p-2 hover:bg-[#EFEAD9] rounded-xl transition-colors border-2 border-transparent hover:border-[#D4CDB8]"

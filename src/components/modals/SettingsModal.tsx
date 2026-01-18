@@ -200,7 +200,7 @@ export function SettingsModal() {
             </h3>
             <div className="space-y-2">
               <a
-                href="https://x.com/PumpBetFun"
+                href="https://x.com/PumpBetDotFun"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-3 bg-[#F5F0E1] rounded-xl border-2 border-[#D4CDB8] hover:border-[#3A4A2D]/30 transition-colors group"
@@ -217,7 +217,7 @@ export function SettingsModal() {
               </a>
 
               <a
-                href="https://pump.fun"
+                href="https://pump.fun/coin/9Q7PuJrzrFrkQDkCrkDL6eXpUuN4hXAmxeHtAdH7pump"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-3 bg-[#F5F0E1] rounded-xl border-2 border-[#D4CDB8] hover:border-[#5C8A4A]/30 transition-colors group"

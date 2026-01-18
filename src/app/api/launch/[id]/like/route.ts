@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, isSupabaseConfigured, DBPendingPrediction } from '@/lib/supabase';
 import { headers } from 'next/headers';
-import { inMemoryPredictions, inMemoryLikes } from '../../route';
+import { inMemoryPredictions, inMemoryLikes } from '@/lib/launch-store';
 
 const GRADUATION_THRESHOLD = 15;
 
