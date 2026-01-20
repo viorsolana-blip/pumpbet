@@ -272,7 +272,7 @@ export default function Home() {
 
   return (
     <div className="h-screen flex flex-col bg-[#F5F0E1]">
-      {/* <MobileOverlay /> */}
+      <MobileOverlay />
       <Header />
 
       {/* Full Screen Mode - when clicking from whale flow */}
