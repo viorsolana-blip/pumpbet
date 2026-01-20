@@ -57,7 +57,7 @@ export function NewTabPanel() {
           <div className="absolute -inset-4 bg-[#6B7B5E]/10 rounded-full blur-2xl" />
           <Image
             src="/brand/mascot.png"
-            alt="PumpBet"
+            alt="dumpbet.fun"
             width={80}
             height={80}
             className="relative mascot-bounce"

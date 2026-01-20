@@ -53,13 +53,13 @@ function MobileOverlay() {
         <div className="flex flex-col items-center mb-12">
           <Image
             src="/brand/helmet-logo.png"
-            alt="PumpBet"
+            alt="dumpbet.fun"
             width={80}
             height={80}
             className="mb-4"
           />
           <div className="flex items-baseline">
-            <span className="text-2xl text-[#6B7B5E] font-bold tracking-tight" style={{ fontFamily: 'Hyperbole, sans-serif' }}>pumpbet</span>
+            <span className="text-2xl text-[#6B7B5E] font-bold tracking-tight" style={{ fontFamily: 'Hyperbole, sans-serif' }}>dumpbet</span>
             <span className="text-2xl text-[#8B9B7E]" style={{ fontFamily: 'Bambino, sans-serif' }}>.fun</span>
           </div>
         </div>
@@ -74,7 +74,7 @@ function MobileOverlay() {
           </h1>
           <div className="w-12 h-[1px] bg-[#1a1a1a] mx-auto mb-6" />
           <p className="text-[#444] text-sm leading-relaxed">
-            PumpBet is a trench trading terminal built for desktop screens.
+            dumpbet.fun is a trench trading terminal built for desktop screens.
           </p>
         </div>
       </div>
@@ -82,7 +82,7 @@ function MobileOverlay() {
       {/* Bottom section */}
       <div className="pb-12 text-center">
         <p className="text-[#333] text-xs tracking-wider uppercase">
-          pumpbet.fun
+          dumpbet.fun
         </p>
       </div>
 
@@ -125,7 +125,7 @@ export default function Home() {
 
   // Show tutorial only on first visit
   useEffect(() => {
-    const hasSeenTutorial = localStorage.getItem('pumpbet_tutorial_seen');
+    const hasSeenTutorial = localStorage.getItem('dumpbet_tutorial_seen');
     if (!hasSeenTutorial) {
       setShowTutorial(true);
     }
@@ -272,7 +272,7 @@ export default function Home() {
 
   return (
     <div className="h-screen flex flex-col bg-[#F5F0E1]">
-      <MobileOverlay />
+      {/* <MobileOverlay /> */}
       <Header />
 
       {/* Full Screen Mode - when clicking from whale flow */}

@@ -200,7 +200,7 @@ export function SettingsModal() {
             </h3>
             <div className="space-y-2">
               <a
-                href="https://x.com/PumpBetDotFun"
+                href="https://x.com/DumpBetDotFun"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-3 bg-[#F5F0E1] rounded-xl border-2 border-[#D4CDB8] hover:border-[#3A4A2D]/30 transition-colors group"
@@ -217,7 +217,7 @@ export function SettingsModal() {
               </a>
 
               <a
-                href="https://pump.fun/coin/9Q7PuJrzrFrkQDkCrkDL6eXpUuN4hXAmxeHtAdH7pump"
+                href="https://pump.fun/coin/7aXkgh3noKCUfJCjha2yx9MM15VNQ5Cbbw4uUmcVpump"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-3 bg-[#F5F0E1] rounded-xl border-2 border-[#D4CDB8] hover:border-[#5C8A4A]/30 transition-colors group"
@@ -226,7 +226,7 @@ export function SettingsModal() {
                   <div className="w-10 h-10 rounded-xl bg-[#EFEAD9] group-hover:bg-[#5C8A4A]/10 flex items-center justify-center transition-colors border-2 border-[#E8E2D0]">
                     <span className="text-xs font-bold text-[#8B9B7E] group-hover:text-[#5C8A4A] transition-colors">$</span>
                   </div>
-                  <span className="text-sm text-[#3A4A2D] font-bambino font-bold">Buy $PUMPBET</span>
+                  <span className="text-sm text-[#3A4A2D] font-bambino font-bold">Buy $DUMPBET</span>
                 </div>
                 <ExternalLink className="w-4 h-4 text-[#D4CDB8] group-hover:text-[#5C8A4A] transition-colors" />
               </a>
@@ -254,7 +254,7 @@ export function SettingsModal() {
             Done
           </button>
           <p className="text-[10px] text-[#8B9B7E] text-center mt-3 font-bambino">
-            pumpbet.fun v0.1.0 - <span className="text-[#6B7B5E] font-bold">gm from the trenches</span>
+            dumpbet.fun v0.1.0 - <span className="text-[#6B7B5E] font-bold">gm from the trenches</span>
           </p>
         </div>
       </div>

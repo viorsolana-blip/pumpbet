@@ -8,20 +8,20 @@ const TransactionToast = dynamic(
 );
 
 export const metadata: Metadata = {
-  title: "PumpBet - Prediction Markets on Solana",
+  title: "dumpbet.fun - Prediction Markets on Solana",
   description: "Trade on real-world events with SOL. Polymarket and Kalshi markets, powered by Solana.",
-  keywords: ["prediction market", "solana", "crypto", "betting", "polymarket", "kalshi", "pumpbet"],
-  authors: [{ name: "PumpBet" }],
+  keywords: ["prediction market", "solana", "crypto", "betting", "polymarket", "kalshi", "dumpbet"],
+  authors: [{ name: "dumpbet.fun" }],
   openGraph: {
-    title: "PumpBet - Prediction Markets on Solana",
+    title: "dumpbet.fun - Prediction Markets on Solana",
     description: "Trade on real-world events with SOL. Polymarket and Kalshi markets, powered by Solana.",
-    url: "https://pumpbet.fun",
-    siteName: "PumpBet",
+    url: "https://dumpbet.fun",
+    siteName: "dumpbet.fun",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "PumpBet - Prediction Markets on Solana",
+    title: "dumpbet.fun - Prediction Markets on Solana",
     description: "Trade on real-world events with SOL.",
   },
   robots: {
@@ -38,16 +38,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {/* Black screen overlay - remove this div to show the site */}
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: '#000',
-          zIndex: 99999
-        }} />
         {children}
         <TransactionToast />
       </body>

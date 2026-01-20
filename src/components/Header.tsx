@@ -174,7 +174,7 @@ export function Header() {
           <div className="relative">
             <Image
               src="/brand/helmet-logo.png"
-              alt="PumpBet"
+              alt="dumpbet.fun"
               width={40}
               height={40}
               className="helmet-wobble"
@@ -182,7 +182,7 @@ export function Header() {
           </div>
           {/* Brand Text */}
           <div className="hidden sm:flex items-baseline">
-            <span className="text-xl text-[#5A6A4D] font-hyperbole tracking-tight">pumpbet</span>
+            <span className="text-xl text-[#5A6A4D] font-hyperbole tracking-tight">dumpbet</span>
             <span className="text-xl text-[#3A4A2D]" style={{ fontFamily: 'Bambino, sans-serif' }}>.fun</span>
           </div>
         </button>
@@ -233,20 +233,20 @@ export function Header() {
           </span>
         </Link>
 
-        {/* $PUMPBET Token Button */}
+        {/* $DUMPBET Token Button */}
         <a
-          href="https://pump.fun/coin/9Q7PuJrzrFrkQDkCrkDL6eXpUuN4hXAmxeHtAdH7pump"
+          href="https://pump.fun/coin/7aXkgh3noKCUfJCjha2yx9MM15VNQ5Cbbw4uUmcVpump"
           target="_blank"
           rel="noopener noreferrer"
           className="group flex items-center gap-2 px-4 py-2 bg-[#6B7B5E] hover:bg-[#5A6A4D] border-2 border-[#4A5A3D] rounded-xl transition-all hover:scale-105 shadow-md"
         >
           <Coins className="w-4 h-4 text-[#E4D4B8]" />
-          <span className="text-sm font-bold text-[#E4D4B8] font-bambino">$PUMPBET</span>
+          <span className="text-sm font-bold text-[#E4D4B8] font-bambino">$DUMPBET</span>
         </a>
 
         {/* X (Twitter) Link */}
         <a
-          href="https://x.com/PumpBetDotFun"
+          href="https://x.com/DumpBetDotFun"
           target="_blank"
           rel="noopener noreferrer"
           className="p-2 hover:bg-[#EFEAD9] rounded-xl transition-colors border-2 border-transparent hover:border-[#D4CDB8]"

@@ -10,7 +10,7 @@ const onboardingSteps = [
     id: 'welcome',
     title: 'Welcome to the Trenches',
     subtitle: 'Soldier',
-    description: 'pumpbet.fun is where degens come to bet on KOL milestones, memecoin predictions, and trench warfare outcomes.',
+    description: 'dumpbet.fun is where degens come to bet on KOL milestones, memecoin predictions, and trench warfare outcomes.',
     features: [
       'Bet on KOL follower milestones',
       'Real-time whale flow tracking',
@@ -135,7 +135,7 @@ export function OnboardingModal() {
           <div className="flex items-center gap-3">
             <Image
               src="/brand/helmet-logo.png"
-              alt="PumpBet"
+              alt="dumpbet.fun"
               width={28}
               height={28}
               className="rounded"
@@ -161,7 +161,7 @@ export function OnboardingModal() {
                 <div className="absolute -inset-4 bg-[#6B7B5E]/20 rounded-full blur-2xl" />
                 <Image
                   src="/brand/mascot.png"
-                  alt="PumpBet Mascot"
+                  alt="dumpbet.fun Mascot"
                   width={step.mascotSize === 'large' ? 120 : 80}
                   height={step.mascotSize === 'large' ? 120 : 80}
                   className="relative mascot-bounce"

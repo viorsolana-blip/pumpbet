@@ -81,12 +81,12 @@ export default function FlywheelPage() {
           <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
             <Image
               src="/brand/helmet-logo.png"
-              alt="PumpBet"
+              alt="dumpbet.fun"
               width={32}
               height={32}
             />
             <div className="hidden sm:flex items-baseline">
-              <span className="text-sm text-[#5A6A4D] font-bold" style={{ fontFamily: 'Hyperbole, sans-serif' }}>pumpbet</span>
+              <span className="text-sm text-[#5A6A4D] font-bold" style={{ fontFamily: 'Hyperbole, sans-serif' }}>dumpbet</span>
               <span className="text-sm text-[#8B9B7E]" style={{ fontFamily: 'Bambino, sans-serif' }}>.fun</span>
             </div>
           </div>
@@ -103,7 +103,7 @@ export default function FlywheelPage() {
 
             {/* Button content */}
             <div className="relative flex items-center justify-center gap-2">
-              <span className="text-xs font-bambino font-bold uppercase tracking-wider">buy $pumpbet</span>
+              <span className="text-xs font-bambino font-bold uppercase tracking-wider">buy $dumpbet</span>
               <ExternalLink className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform duration-300" />
             </div>
 
@@ -190,7 +190,7 @@ export default function FlywheelPage() {
               />
               <Image
                 src="/brand/mascot.png"
-                alt="PumpBet"
+                alt="dumpbet.fun"
                 width={100}
                 height={100}
                 className="relative z-10 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3"
@@ -261,7 +261,7 @@ export default function FlywheelPage() {
               </div>
               <h3 className="text-2xl mb-4 text-[#3A4A2D]" style={{ fontFamily: 'Hyperbole, sans-serif' }}>WE BUYBACK</h3>
               <p className="text-[#6B7B5E] text-sm leading-relaxed font-bambino">
-                70% of all fees go straight to buying $PUMPBET off the market.
+                70% of all fees go straight to buying $DUMPBET off the market.
                 automatic. transparent. no bullshit.
               </p>
             </div>
@@ -346,7 +346,7 @@ export default function FlywheelPage() {
               rel="noopener noreferrer"
               className="group px-8 py-4 bg-[#6B7B5E] text-[#F5F0E1] font-bambino font-bold uppercase tracking-wider text-sm rounded-xl transition-all hover:scale-105 hover:bg-[#5A6A4D] flex items-center justify-center gap-2 shadow-lg"
             >
-              <span>buy $pumpbet</span>
+              <span>buy $dumpbet</span>
               <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </a>
             <Link
@@ -365,11 +365,11 @@ export default function FlywheelPage() {
           <div className="flex items-center gap-2">
             <Image
               src="/brand/helmet-logo.png"
-              alt="PumpBet"
+              alt="dumpbet.fun"
               width={20}
               height={20}
             />
-            <span>pumpbet.fun</span>
+            <span>dumpbet.fun</span>
           </div>
           <span>gm from the trenches</span>
         </div>

@@ -56,7 +56,7 @@ export function TutorialModal() {
   };
 
   const handleExplore = () => {
-    localStorage.setItem('pumpbet_tutorial_seen', 'true');
+    localStorage.setItem('dumpbet_tutorial_seen', 'true');
     setShowTutorial(false);
   };
 
